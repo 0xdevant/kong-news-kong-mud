@@ -1,0 +1,19 @@
+name = "hk-news-rss-worker"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[triggers]
+# Hourly RSS fetch (UTC); daily cleanup at 00:00 UTC
+crons = ["0 * * * *", "0 0 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hk-news-rss-db"
+# Set after: npx wrangler d1 create hk-news-rss-db
+database_id = "5308a69e-a5b0-4253-8d57-136af27cedf3"
+
+[vars]
+WORKER_ENV = "production"
+PAGES_ORIGIN = "https://hk-news-rss-web.pages.dev"

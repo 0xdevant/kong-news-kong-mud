@@ -1,0 +1,13 @@
+{
+  "name": "hk-news-rss",
+  "private": true,
+  "workspaces": ["worker", "web"],
+  "scripts": {
+    "deploy": "npm run deploy:worker && npm run deploy:web",
+    "deploy:worker": "cd worker && npm run deploy",
+    "deploy:web": "cd web && VITE_API_URL=https://hk-news-rss-worker.cloudflare-underfeed523.workers.dev npm run build && npx wrangler pages deploy dist --project-name hk-news-rss-web --commit-dirty=true"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}

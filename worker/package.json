@@ -1,0 +1,18 @@
+{
+  "name": "hk-news-rss-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 execute hk-news-rss-db --local --file=schema.sql"
+  },
+  "dependencies": {
+    "hono": "^4.12.8",
+    "wrangler": "^4.74.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260316.1",
+    "typescript": "^5.9.3"
+  }
+}

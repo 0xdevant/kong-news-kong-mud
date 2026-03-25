@@ -1,0 +1,5 @@
+# Copy to .dev.vars for local wrangler dev (not committed)
+# REFRESH_SECRET=your-secret
+# PAGES_ORIGIN=https://your-pages.pages.dev
+# FILTER_EXCLUDE_KEYWORDS=keyword1, keyword2
+# FILTER_CLICKBAIT_PATTERNS=
