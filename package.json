@@ -5,7 +5,7 @@
   "scripts": {
     "deploy": "npm run deploy:worker && npm run deploy:web",
     "deploy:worker": "cd worker && npm run deploy",
-    "deploy:web": "cd web && npm run build && npx wrangler pages deploy dist --project-name kong-news-kong-mud-web --commit-dirty=true"
+    "deploy:web": "cd web && npm run build && npx wrangler pages deploy dist --project-name kong-news-kong-mud --commit-dirty=true"
   },
   "devDependencies": {
     "tsx": "^4.21.0"

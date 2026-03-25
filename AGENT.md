@@ -12,10 +12,10 @@ HK news **RSS aggregator** (no HTML crawling). Teasers only; users open **原文
 ## Cloudflare names (current)
 
 - **Worker script:** `kong-news-kong-mud-worker` (URL pattern: `https://kong-news-kong-mud-worker.<account>.workers.dev`)
-- **Pages project:** `kong-news-kong-mud-web` → `https://kong-news-kong-mud-web.pages.dev`
+- **Pages project:** `kong-news-kong-mud` → public URL **`https://news.clawify.dev`** (custom domain; `PAGES_ORIGIN` matches this for CORS)
 - **D1:** still **`hk-news-rss-db`** + same `database_id` in `worker/wrangler.toml` (legacy name; do not rename without migration)
 
-`worker/wrangler.toml` sets `PAGES_ORIGIN` for CORS. After a **custom domain** on Pages, update `PAGES_ORIGIN` and redeploy the Worker.
+`worker/wrangler.toml` sets `PAGES_ORIGIN` to **`https://news.clawify.dev`**. Redeploy the Worker whenever this changes.
 
 ## Commands
 

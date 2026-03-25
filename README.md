@@ -8,12 +8,12 @@ Based on the same stack patterns as **ho-lou-sou** (see `../ho-lou-sou` on your 
 
 | What | URL |
 |------|-----|
-| **Website** | [https://kong-news-kong-mud-web.pages.dev](https://kong-news-kong-mud-web.pages.dev) |
+| **Website** | [https://news.clawify.dev](https://news.clawify.dev) (custom domain on Pages; `kong-news-kong-mud.pages.dev` still works as the default Pages host) |
 | **API (Worker)** | `https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev` |
 
 The **D1 database** is still named `hk-news-rss-db` in Cloudflare (same `database_id` in [`worker/wrangler.toml`](worker/wrangler.toml)); only app/Worker/Pages names changed to `kong-news-kong-mud-*`.
 
-CORS: `PAGES_ORIGIN` is set to `https://kong-news-kong-mud-web.pages.dev` in [`worker/wrangler.toml`](worker/wrangler.toml). If you add a **custom domain** on Pages, add that origin to `PAGES_ORIGIN` and redeploy the Worker.
+CORS: `PAGES_ORIGIN` is set to **`https://news.clawify.dev`** in [`worker/wrangler.toml`](worker/wrangler.toml) so the browser origin matches the custom domain. Redeploy the Worker after changing it. Add **`news.clawify.dev`** under the Pages project’s **Custom domains** and point DNS (e.g. CNAME `news` → `kong-news-kong-mud.pages.dev`) in the `clawify.dev` zone.
 
 **Browser API calls** use same-origin `/api/*` via a [Pages Function](web/functions/api/[[path]].ts) that proxies to the Worker (avoids cross-origin issues with `workers.dev`).
 

@@ -1,6 +1,6 @@
 # Copy to .dev.vars for local wrangler dev (not committed)
 # REFRESH_SECRET=your-secret
-# PAGES_ORIGIN=https://your-pages.pages.dev
+# PAGES_ORIGIN=https://news.clawify.dev
 # FILTER_EXCLUDE_KEYWORDS=keyword1, keyword2
 # FILTER_CLICKBAIT_PATTERNS=
 # Optional contact form → Resend (messages always stored in D1)

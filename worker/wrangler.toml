@@ -16,4 +16,4 @@ database_id = "5308a69e-a5b0-4253-8d57-136af27cedf3"
 
 [vars]
 WORKER_ENV = "production"
-PAGES_ORIGIN = "https://kong-news-kong-mud-web.pages.dev"
+PAGES_ORIGIN = "https://news.clawify.dev"
