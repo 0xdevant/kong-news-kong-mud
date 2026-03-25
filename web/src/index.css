@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
+/* Professional violet palette — light: warm off-white + deep violet; dark: ink purple + soft lavender accents */
 @theme {
-  --color-brand: #2563eb;
-  --color-brand-light: #3b82f6;
+  --color-brand: #5b21b6;
+  --color-brand-light: #7c3aed;
+  --color-accent: #5b21b6;
   --color-surface: #ffffff;
-  --color-surface-alt: #f8f9fa;
-  /* Use fg / fg-muted — avoids Tailwind `text-*` ambiguity with `text` color name */
-  --color-fg: #1a1a2e;
-  --color-fg-muted: #6b7280;
-  --color-border: #e5e7eb;
+  --color-surface-alt: #f8f6fc;
+  --color-card: #ffffff;
+  --color-card-hover: #faf8ff;
+  --color-elevated: #f3f0fa;
+  --color-fg: #17131f;
+  --color-fg-muted: #65606d;
+  --color-border: #e6e0ef;
 }
 
 html {
@@ -30,11 +34,17 @@ body {
 
 html.dark {
   color-scheme: dark;
-  --color-surface: #1a1a2e;
-  --color-surface-alt: #121220;
-  --color-fg: #e8e8ed;
-  --color-fg-muted: #9ca3af;
-  --color-border: #2d2d44;
+  --color-brand: #7c3aed;
+  --color-brand-light: #a78bfa;
+  --color-accent: #d4c4fc;
+  --color-surface: #16121f;
+  --color-surface-alt: #0e0b14;
+  --color-card: #1a1626;
+  --color-card-hover: #221c32;
+  --color-elevated: #252030;
+  --color-fg: #f0ecf8;
+  --color-fg-muted: #a89fb8;
+  --color-border: #3d3552;
   background: var(--color-surface-alt);
   color: var(--color-fg);
 }
@@ -46,20 +56,24 @@ html.dark body {
 
 html.dark .bg-gray-100,
 html.dark .bg-gray-200 {
-  background-color: #2a2a44;
+  background-color: var(--color-elevated);
 }
+
 html.dark .bg-surface {
-  background-color: rgba(26, 26, 46, 0.85);
+  background-color: rgba(22, 18, 32, 0.92);
 }
+
 html.dark .border-border {
   border-color: var(--color-border);
 }
+
 html.dark .hover\:bg-gray-100:hover {
-  background-color: #33335a;
+  background-color: var(--color-card-hover);
 }
+
 html.dark input,
 html.dark textarea {
-  background-color: #1e1e36;
+  background-color: var(--color-card);
   border-color: var(--color-border);
   color: var(--color-fg);
 }
@@ -77,11 +91,12 @@ button,
   scrollbar-width: none;
 }
 
+/* Selected filter chip — brand purple, both modes */
 .btn-active {
-  background-color: #1a1a2e;
-  color: #fff;
+  background-color: var(--color-brand);
+  color: #ffffff;
 }
 html.dark .btn-active {
-  background-color: #fff;
-  color: #121220;
+  background-color: var(--color-brand);
+  color: #ffffff;
 }

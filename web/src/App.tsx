@@ -92,7 +92,7 @@ export default function App() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-[#2a2a44] transition-colors"
+              className="p-2 rounded-full hover:bg-elevated dark:hover:bg-card-hover transition-colors"
               aria-label={isDark ? "淺色" : "深色"}
             >
               {isDark ? "☀️" : "🌙"}
@@ -101,7 +101,7 @@ export default function App() {
               type="button"
               onClick={handleRefresh}
               disabled={refreshing}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-[#2a2a44] disabled:opacity-50"
+              className="p-2 rounded-full hover:bg-elevated dark:hover:bg-card-hover disabled:opacity-50 transition-colors"
               aria-label="重新整理"
             >
               <span className={refreshing ? "inline-block animate-spin" : ""}>

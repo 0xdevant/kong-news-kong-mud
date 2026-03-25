@@ -25,13 +25,13 @@ export default function SearchBar({
           }}
           onKeyDown={(e) => e.key === "Enter" && submit()}
           placeholder="搜尋標題或摘要…"
-          className="flex-1 rounded-lg border border-border px-3 py-2 text-sm bg-surface text-fg placeholder:text-fg-muted dark:bg-[#1e1e36]"
+          className="flex-1 rounded-lg border border-border px-3 py-2 text-sm bg-surface text-fg placeholder:text-fg-muted shadow-inner shadow-black/[0.04] dark:shadow-none dark:bg-card"
         />
         <button
           type="button"
           onClick={submit}
           disabled={searching}
-          className="px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium disabled:opacity-50"
+          className="px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium shadow-sm shadow-black/15 hover:opacity-90 active:opacity-80 disabled:opacity-50 transition-opacity"
         >
           {searching ? "…" : "搜尋"}
         </button>

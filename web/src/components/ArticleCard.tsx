@@ -14,25 +14,25 @@ function formatTime(a: Article): string {
 
 export default function ArticleCard({ article }: { article: Article }) {
   return (
-    <article className="group bg-white dark:bg-[#1e1e36] rounded-xl border border-border shadow-sm overflow-hidden">
+    <article className="group bg-card rounded-xl border border-border shadow-sm shadow-black/[0.06] dark:shadow-none overflow-hidden">
       <a
         href={article.source_url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block p-4 hover:bg-gray-50 dark:hover:bg-[#2a2a48] transition-colors"
+        className="block p-4 hover:bg-card-hover transition-colors"
       >
         <div className="flex gap-3">
           {article.image_url && (
             <img
               src={article.image_url}
               alt=""
-              className="w-20 h-20 object-cover rounded-lg shrink-0 bg-gray-100 dark:bg-gray-800"
+              className="w-20 h-20 object-cover rounded-lg shrink-0 bg-elevated dark:bg-elevated"
               loading="lazy"
             />
           )}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2 text-xs text-fg-muted mb-1">
-              <span className="font-medium text-brand">{article.source_name}</span>
+              <span className="font-medium text-accent">{article.source_name}</span>
               <span>·</span>
               <span>{article.category}</span>
               <span>·</span>
@@ -40,7 +40,7 @@ export default function ArticleCard({ article }: { article: Article }) {
                 {formatTime(article)}
               </time>
             </div>
-            <h2 className="text-base font-semibold text-fg leading-snug group-hover:text-brand transition-colors">
+            <h2 className="text-base font-semibold text-fg leading-snug group-hover:text-accent transition-colors">
               {article.title}
             </h2>
             {article.description && (
@@ -48,7 +48,7 @@ export default function ArticleCard({ article }: { article: Article }) {
                 {article.description}
               </p>
             )}
-            <p className="text-xs text-brand mt-2 font-medium">
+            <p className="text-xs text-accent mt-2 font-medium">
               閱讀全文（原文網站）→
             </p>
           </div>

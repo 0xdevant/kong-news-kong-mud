@@ -11,7 +11,7 @@ export default function DisclaimerPage({ onBack, onContact }: Props) {
           <button
             type="button"
             onClick={onBack}
-            className="text-brand font-medium text-sm"
+            className="text-accent font-medium text-sm"
           >
             ← 返回
           </button>
@@ -58,7 +58,7 @@ export default function DisclaimerPage({ onBack, onContact }: Props) {
             <button
               type="button"
               onClick={onContact}
-              className="text-brand underline mx-1"
+              className="text-accent underline mx-1"
             >
               聯絡表格
             </button>

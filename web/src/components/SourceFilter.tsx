@@ -20,7 +20,7 @@ export default function SourceFilter({
           className={`text-xs px-2.5 py-1 rounded-md ${
             active === null
               ? "bg-brand text-white"
-              : "bg-gray-100 dark:bg-[#2a2a44] text-fg-muted"
+              : "bg-elevated text-fg-muted dark:hover:bg-card-hover"
           }`}
         >
           全部
@@ -33,7 +33,7 @@ export default function SourceFilter({
             className={`text-xs px-2.5 py-1 rounded-md ${
               active === s.source_name
                 ? "bg-brand text-white"
-                : "bg-gray-100 dark:bg-[#2a2a44] text-fg-muted"
+                : "bg-elevated text-fg-muted dark:hover:bg-card-hover"
             }`}
           >
             {s.source_name}{" "}

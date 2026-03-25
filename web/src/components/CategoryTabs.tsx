@@ -17,7 +17,7 @@ export default function CategoryTabs({
         className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
           active === null
             ? "btn-active"
-            : "bg-gray-100 dark:bg-[#2a2a44] text-fg-muted hover:bg-gray-200 dark:hover:bg-[#33335a]"
+            : "bg-elevated text-fg-muted hover:bg-card-hover"
         }`}
       >
         全部
@@ -30,7 +30,7 @@ export default function CategoryTabs({
           className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             active === c.id
               ? "btn-active"
-              : "bg-gray-100 dark:bg-[#2a2a44] text-fg-muted hover:bg-gray-200 dark:hover:bg-[#33335a]"
+              : "bg-elevated text-fg-muted hover:bg-card-hover"
           }`}
         >
           {c.label}

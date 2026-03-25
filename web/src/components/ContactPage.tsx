@@ -47,7 +47,7 @@ export default function ContactPage({ onBack }: Props) {
           <button
             type="button"
             onClick={onBack}
-            className="text-brand font-medium text-sm"
+            className="text-accent font-medium text-sm"
           >
             ← 返回
           </button>
@@ -68,7 +68,7 @@ export default function ContactPage({ onBack }: Props) {
             <button
               type="button"
               onClick={() => setSent(false)}
-              className="mt-4 px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium"
+              className="mt-4 px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium hover:opacity-90"
             >
               再發一封
             </button>
@@ -85,7 +85,7 @@ export default function ContactPage({ onBack }: Props) {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="你嘅名"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent"
               />
             </div>
             <div>
@@ -98,7 +98,7 @@ export default function ContactPage({ onBack }: Props) {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="your@email.com"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-fg text-sm placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent"
               />
             </div>
             <div>
@@ -111,14 +111,14 @@ export default function ContactPage({ onBack }: Props) {
                 required
                 rows={5}
                 placeholder="你嘅建議或問題…"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-fg text-sm resize-none placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-fg text-sm resize-none placeholder:text-fg-muted focus:outline-none focus:ring-2 focus:ring-accent/25 focus:border-accent"
               />
             </div>
             {error && <p className="text-red-600 dark:text-red-400 text-xs">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-2.5 rounded-lg bg-brand text-white text-sm font-medium hover:opacity-95 transition-opacity disabled:opacity-50"
+              className="w-full py-2.5 rounded-lg bg-brand text-white text-sm font-medium hover:opacity-90 active:opacity-80 transition-opacity disabled:opacity-50"
             >
               {submitting ? "提交中…" : "發送訊息"}
             </button>
