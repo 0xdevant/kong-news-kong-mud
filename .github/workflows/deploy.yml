@@ -33,3 +33,5 @@ jobs:
         run: npm run deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Required for `wrangler pages deploy` (web/ has no wrangler.toml); same as worker account_id.
+          CLOUDFLARE_ACCOUNT_ID: "21c1a304a3cc9e14c82bc784f6abbfa9"

@@ -1,5 +1,7 @@
 name = "kong-news-kong-mud-worker"
 main = "src/index.ts"
+# Avoids /memberships on deploy when using CLOUDFLARE_API_TOKEN (CI tokens often lack User scope).
+account_id = "21c1a304a3cc9e14c82bc784f6abbfa9"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
