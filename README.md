@@ -13,7 +13,9 @@ Based on the same stack patterns as **ho-lou-sou** (see `../ho-lou-sou` on your 
 
 CORS: `PAGES_ORIGIN` is set to `https://hk-news-rss-web.pages.dev` in [`worker/wrangler.toml`](worker/wrangler.toml). If you add a **custom domain** on Pages, add that origin to `PAGES_ORIGIN` and redeploy the Worker.
 
-Populate or refresh the database manually:
+**Browser API calls** use same-origin `/api/*` via a [Pages Function](web/functions/api/[[path]].ts) that proxies to the Worker (avoids cross-origin issues with `workers.dev`).
+
+Populate or refresh the database manually (recommended once after first deploy):
 
 ```bash
 curl -X POST https://hk-news-rss-worker.cloudflare-underfeed523.workers.dev/api/refresh

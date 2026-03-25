@@ -24,7 +24,8 @@ export interface SourceInfo {
   count: number;
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || "";
+/** Empty = same-origin `/api` (Pages Functions proxy in production); dev uses Vite proxy. */
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 const CACHE_TTL = 5 * 60 * 1000;
 const apiCache = new Map<string, { data: unknown; ts: number }>();
