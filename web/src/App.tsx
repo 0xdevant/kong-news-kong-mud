@@ -6,13 +6,17 @@ import SourceFilter from "./components/SourceFilter";
 import ArticleList from "./components/ArticleList";
 import SearchBar from "./components/SearchBar";
 import AboutPage from "./components/AboutPage";
+import ContactPage from "./components/ContactPage";
+import DisclaimerPage from "./components/DisclaimerPage";
 
 export default function App() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeSource, setActiveSource] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [page, setPage] = useState<"home" | "about">("home");
+  const [page, setPage] = useState<
+    "home" | "about" | "contact" | "disclaimer"
+  >("home");
   const { isDark, toggle: toggleTheme } = useTheme();
 
   const { categories, sources, refreshInit } = useInit();
@@ -49,7 +53,21 @@ export default function App() {
   const displayArticles = isSearching ? searchResults : feedArticles;
 
   if (page === "about")
-    return <AboutPage onBack={() => setPage("home")} />;
+    return (
+      <AboutPage
+        onBack={() => setPage("home")}
+        onContact={() => setPage("contact")}
+      />
+    );
+  if (page === "contact")
+    return <ContactPage onBack={() => setPage("home")} />;
+  if (page === "disclaimer")
+    return (
+      <DisclaimerPage
+        onBack={() => setPage("home")}
+        onContact={() => setPage("contact")}
+      />
+    );
 
   return (
     <div className="min-h-screen max-w-2xl mx-auto pb-8">
@@ -65,10 +83,10 @@ export default function App() {
             }}
             className="text-left"
           >
-            <h1 className="text-xl font-bold text-[var(--color-text)] tracking-tight">
+            <h1 className="text-xl font-bold text-fg tracking-tight">
               香港媒體 RSS
             </h1>
-            <p className="text-xs text-text-muted">官方訂閱匯總 · 點擊前往原文</p>
+            <p className="text-xs text-fg-muted">官方訂閱匯總 · 點擊前往原文</p>
           </button>
           <div className="flex items-center gap-1">
             <button
@@ -116,7 +134,7 @@ export default function App() {
 
       <main>
         {isSearching && searchResults.length > 0 && (
-          <p className="px-4 pt-3 text-sm text-text-muted">
+          <p className="px-4 pt-3 text-sm text-fg-muted">
             找到 {searchResults.length} 則
           </p>
         )}
@@ -127,15 +145,33 @@ export default function App() {
         />
       </main>
 
-      <footer className="text-center py-8 text-xs text-text-muted space-y-2 px-4">
+      <footer className="text-center py-8 text-xs text-fg-muted space-y-2 px-4">
         <p>內容來自各媒體公開 RSS，版權歸原出版方。</p>
-        <button
-          type="button"
-          onClick={() => setPage("about")}
-          className="underline hover:text-[var(--color-text)]"
-        >
-          關於本站
-        </button>
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+          <button
+            type="button"
+            onClick={() => setPage("about")}
+            className="underline hover:text-fg"
+          >
+            關於我哋
+          </button>
+          <span className="opacity-50">·</span>
+          <button
+            type="button"
+            onClick={() => setPage("contact")}
+            className="underline hover:text-fg"
+          >
+            聯絡我哋
+          </button>
+          <span className="opacity-50">·</span>
+          <button
+            type="button"
+            onClick={() => setPage("disclaimer")}
+            className="underline hover:text-fg"
+          >
+            免責聲明
+          </button>
+        </div>
       </footer>
     </div>
   );

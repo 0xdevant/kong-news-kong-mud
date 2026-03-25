@@ -31,7 +31,7 @@ export default function ArticleCard({ article }: { article: Article }) {
             />
           )}
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-text-muted mb-1">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-fg-muted mb-1">
               <span className="font-medium text-brand">{article.source_name}</span>
               <span>·</span>
               <span>{article.category}</span>
@@ -40,11 +40,11 @@ export default function ArticleCard({ article }: { article: Article }) {
                 {formatTime(article)}
               </time>
             </div>
-            <h2 className="text-base font-semibold text-text leading-snug group-hover:text-brand transition-colors">
+            <h2 className="text-base font-semibold text-fg leading-snug group-hover:text-brand transition-colors">
               {article.title}
             </h2>
             {article.description && (
-              <p className="text-xs text-text-muted mt-1.5 line-clamp-1">
+              <p className="text-xs text-fg-muted mt-1.5 line-clamp-1">
                 {article.description}
               </p>
             )}

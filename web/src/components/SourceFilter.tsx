@@ -12,7 +12,7 @@ export default function SourceFilter({
   if (sources.length === 0) return null;
   return (
     <div className="px-4 pb-3">
-      <p className="text-xs text-text-muted mb-2">來源</p>
+      <p className="text-xs text-fg-muted mb-2">來源</p>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -20,7 +20,7 @@ export default function SourceFilter({
           className={`text-xs px-2.5 py-1 rounded-md ${
             active === null
               ? "bg-brand text-white"
-              : "bg-gray-100 dark:bg-[#2a2a44] text-text-muted"
+              : "bg-gray-100 dark:bg-[#2a2a44] text-fg-muted"
           }`}
         >
           全部
@@ -33,7 +33,7 @@ export default function SourceFilter({
             className={`text-xs px-2.5 py-1 rounded-md ${
               active === s.source_name
                 ? "bg-brand text-white"
-                : "bg-gray-100 dark:bg-[#2a2a44] text-text-muted"
+                : "bg-gray-100 dark:bg-[#2a2a44] text-fg-muted"
             }`}
           >
             {s.source_name}{" "}

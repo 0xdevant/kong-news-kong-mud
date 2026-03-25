@@ -17,7 +17,7 @@ export default function CategoryTabs({
         className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
           active === null
             ? "btn-active"
-            : "bg-gray-100 dark:bg-[#2a2a44] text-text-muted hover:bg-gray-200 dark:hover:bg-[#33335a]"
+            : "bg-gray-100 dark:bg-[#2a2a44] text-fg-muted hover:bg-gray-200 dark:hover:bg-[#33335a]"
         }`}
       >
         全部
@@ -30,11 +30,11 @@ export default function CategoryTabs({
           className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             active === c.id
               ? "btn-active"
-              : "bg-gray-100 dark:bg-[#2a2a44] text-text-muted hover:bg-gray-200 dark:hover:bg-[#33335a]"
+              : "bg-gray-100 dark:bg-[#2a2a44] text-fg-muted hover:bg-gray-200 dark:hover:bg-[#33335a]"
           }`}
         >
           {c.label}
-          <span className="text-text-muted text-xs ml-1">({c.count})</span>
+          <span className="text-fg-muted text-xs ml-1">({c.count})</span>
         </button>
       ))}
     </div>

@@ -69,6 +69,8 @@ curl -X POST http://127.0.0.1:8787/api/refresh
 
 Optional: `worker/.dev.vars` from [`.dev.vars.example`](worker/.dev.vars.example). If `REFRESH_SECRET` is set, use `Authorization: Bearer <secret>` on `/api/refresh` and `/api/purge-excluded`.
 
+**Contact form:** messages are stored in D1 (`contact_messages`). Optional **Resend** email: set `RESEND_API_KEY`, `CONTACT_EMAIL_TO`, and (recommended) `RESEND_FROM` with a verified sender in [Resend](https://resend.com).
+
 ## API
 
 | Method | Path | Description |
@@ -77,6 +79,7 @@ Optional: `worker/.dev.vars` from [`.dev.vars.example`](worker/.dev.vars.example
 | GET | `/api/init` | Category and source counts |
 | GET | `/api/search?q=` | Search title / description / labels |
 | GET | `/api/health` | Per-source freshness |
+| POST | `/api/contact` | Contact form JSON `{ name, email, message }` |
 | POST | `/api/refresh` | Run RSS ingestion (optional Bearer secret) |
 | POST | `/api/purge-excluded` | Delete rows matching `FILTER_*` env keywords |
 

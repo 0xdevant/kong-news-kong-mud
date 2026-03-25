@@ -12,7 +12,7 @@ export default function ArticleList({
 }) {
   if (loading && articles.length === 0) {
     return (
-      <div className="px-4 py-12 text-center text-text-muted">載入中…</div>
+      <div className="px-4 py-12 text-center text-fg-muted">載入中…</div>
     );
   }
   if (error) {
@@ -24,7 +24,7 @@ export default function ArticleList({
   }
   if (articles.length === 0) {
     return (
-      <div className="px-4 py-12 text-center text-text-muted">
+      <div className="px-4 py-12 text-center text-fg-muted">
         暫無文章。請確認 Worker 已執行 <code className="text-xs">POST /api/refresh</code>{" "}
         或等待定時更新。
       </div>

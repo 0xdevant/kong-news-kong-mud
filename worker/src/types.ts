@@ -7,6 +7,12 @@ export interface Env {
   /** JSON array or comma-separated exclude keywords (title/description/labels) */
   FILTER_EXCLUDE_KEYWORDS?: string;
   FILTER_CLICKBAIT_PATTERNS?: string;
+  /** Optional: Resend API for contact form notifications */
+  RESEND_API_KEY?: string;
+  /** Recipient for contact notifications (e.g. you@domain.com) */
+  CONTACT_EMAIL_TO?: string;
+  /** Resend "from" (verified domain in Resend dashboard) */
+  RESEND_FROM?: string;
 }
 
 /** Normalized article row (RSS-only; link out for full story) */

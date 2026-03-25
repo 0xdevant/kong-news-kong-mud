@@ -17,3 +17,11 @@ CREATE INDEX idx_articles_category ON articles(category);
 CREATE INDEX idx_articles_fetched ON articles(fetched_at DESC);
 CREATE INDEX idx_articles_source ON articles(source_name);
 CREATE INDEX idx_articles_cat_fetched ON articles(category, fetched_at DESC);
+
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch())
+);

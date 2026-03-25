@@ -5,9 +5,14 @@
   --color-brand-light: #3b82f6;
   --color-surface: #ffffff;
   --color-surface-alt: #f8f9fa;
-  --color-text: #1a1a2e;
-  --color-text-muted: #6b7280;
+  /* Use fg / fg-muted — avoids Tailwind `text-*` ambiguity with `text` color name */
+  --color-fg: #1a1a2e;
+  --color-fg-muted: #6b7280;
   --color-border: #e5e7eb;
+}
+
+html {
+  color-scheme: light;
 }
 
 body {
@@ -19,25 +24,26 @@ body {
     "Microsoft JhengHei",
     sans-serif;
   background: var(--color-surface-alt);
-  color: var(--color-text);
+  color: var(--color-fg);
   margin: 0;
 }
 
 html.dark {
+  color-scheme: dark;
   --color-surface: #1a1a2e;
   --color-surface-alt: #121220;
-  --color-text: #e8e8ed;
-  --color-text-muted: #9ca3af;
+  --color-fg: #e8e8ed;
+  --color-fg-muted: #9ca3af;
   --color-border: #2d2d44;
-  color-scheme: dark;
   background: var(--color-surface-alt);
-  color: var(--color-text);
+  color: var(--color-fg);
 }
 
 html.dark body {
   background: var(--color-surface-alt);
-  color: var(--color-text);
+  color: var(--color-fg);
 }
+
 html.dark .bg-gray-100,
 html.dark .bg-gray-200 {
   background-color: #2a2a44;
@@ -51,14 +57,11 @@ html.dark .border-border {
 html.dark .hover\:bg-gray-100:hover {
   background-color: #33335a;
 }
-html.dark .text-text-muted {
-  color: #9ca3af;
-}
 html.dark input,
 html.dark textarea {
   background-color: #1e1e36;
   border-color: var(--color-border);
-  color: var(--color-text);
+  color: var(--color-fg);
 }
 
 button,

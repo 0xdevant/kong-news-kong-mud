@@ -145,6 +145,57 @@ app.post("/api/purge-excluded", async (c) => {
   return c.json({ success: true, deleted, keywordCount });
 });
 
+app.post("/api/contact", async (c) => {
+  try {
+    const recent = await c.env.DB.prepare(
+      "SELECT COUNT(*) as cnt FROM contact_messages WHERE created_at > ?",
+    )
+      .bind(Math.floor(Date.now() / 1000) - 3600)
+      .first<{ cnt: number }>();
+    if (recent && recent.cnt >= 10)
+      return c.json({ success: false, error: "提交太頻繁，請稍後再試" }, 429);
+
+    const { name, email, message } = await c.req.json<{
+      name: string;
+      email: string;
+      message: string;
+    }>();
+    if (!name || !email || !message)
+      return c.json({ success: false, error: "Missing fields" }, 400);
+    if (message.length > 2000)
+      return c.json({ success: false, error: "Message too long" }, 400);
+
+    await c.env.DB.prepare(
+      "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)",
+    )
+      .bind(name.slice(0, 100), email.slice(0, 200), message.slice(0, 2000))
+      .run();
+
+    const to = c.env.CONTACT_EMAIL_TO;
+    if (c.env.RESEND_API_KEY && to) {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${c.env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from:
+            c.env.RESEND_FROM ||
+            "香港媒體 RSS <onboarding@resend.dev>",
+          to,
+          subject: `香港媒體 RSS 聯絡 — ${name}`,
+          text: `來自: ${name}\nEmail: ${email}\n\n${message}`,
+        }),
+      }).catch(() => {});
+    }
+
+    return c.json({ success: true });
+  } catch {
+    return c.json({ success: false, error: "Failed to submit" }, 500);
+  }
+});
+
 async function runRssIngestion(env: Env) {
   const batches = await Promise.all(
     HK_NEWS_FEEDS.map((cfg) => fetchRssFeeds(cfg)),

@@ -3,3 +3,7 @@
 # PAGES_ORIGIN=https://your-pages.pages.dev
 # FILTER_EXCLUDE_KEYWORDS=keyword1, keyword2
 # FILTER_CLICKBAIT_PATTERNS=
+# Optional contact form → Resend (messages always stored in D1)
+# RESEND_API_KEY=
+# CONTACT_EMAIL_TO=you@example.com
+# RESEND_FROM=香港媒體 RSS <onboarding@resend.dev>

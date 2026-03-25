@@ -25,7 +25,7 @@ export default function SearchBar({
           }}
           onKeyDown={(e) => e.key === "Enter" && submit()}
           placeholder="搜尋標題或摘要…"
-          className="flex-1 rounded-lg border border-border px-3 py-2 text-sm bg-white dark:bg-[#1e1e36]"
+          className="flex-1 rounded-lg border border-border px-3 py-2 text-sm bg-surface text-fg placeholder:text-fg-muted dark:bg-[#1e1e36]"
         />
         <button
           type="button"
