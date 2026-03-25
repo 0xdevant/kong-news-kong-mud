@@ -5,8 +5,8 @@ compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
 [triggers]
-# Hourly RSS fetch (UTC); daily cleanup at 00:00 UTC
-crons = ["0 * * * *", "0 0 * * *"]
+# Single cron (account limit: 5 triggers total across Workers). Hourly RSS; daily cleanup runs at 00:00 UTC inside the handler.
+crons = ["0 * * * *"]
 
 [[d1_databases]]
 binding = "DB"

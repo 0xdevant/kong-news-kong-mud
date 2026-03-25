@@ -97,7 +97,7 @@ Optional: `worker/.dev.vars` from [`.dev.vars.example`](worker/.dev.vars.example
 | POST | `/api/refresh` | Run RSS ingestion (optional Bearer secret) |
 | POST | `/api/purge-excluded` | Delete rows matching `FILTER_*` env keywords |
 
-Cron (see [`worker/wrangler.toml`](worker/wrangler.toml)): hourly RSS fetch, daily cleanup / purge pass.
+Cron (see [`worker/wrangler.toml`](worker/wrangler.toml)): one **hourly** trigger; RSS every hour, cleanup / purge at **00:00 UTC** only (keeps a single cron on free-tier limits).
 
 ## Licence
 

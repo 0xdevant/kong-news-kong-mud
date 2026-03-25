@@ -216,24 +216,25 @@ async function runRssIngestion(env: Env) {
 export default {
   fetch: app.fetch,
 
-  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
-    const trigger = event.cron;
-    console.log(`Cron: ${trigger}`);
+  async scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
+    const utcHour = new Date().getUTCHours();
 
-    if (trigger === "0 0 * * *") {
-      await cleanOldArticles(env, 14);
-      const { deleted } = await purgeExcludedArticles(env);
-      console.log(`Daily cleanup: purged ${deleted} excluded-keyword rows`);
-    }
-
-    if (trigger === "0 * * * *") {
+    if (utcHour === 0) {
       ctx.waitUntil(
-        runRssIngestion(env).then((r) =>
+        (async () => {
+          await cleanOldArticles(env, 14);
+          const { deleted } = await purgeExcludedArticles(env);
           console.log(
-            `Hourly RSS: fetched ${r.fetched}, inserted ${r.inserted}`,
-          ),
-        ),
+            `Daily cleanup (00:00 UTC): purged ${deleted} excluded-keyword rows`,
+          );
+        })(),
       );
     }
+
+    ctx.waitUntil(
+      runRssIngestion(env).then((r) =>
+        console.log(`Hourly RSS: fetched ${r.fetched}, inserted ${r.inserted}`),
+      ),
+    );
   },
 };
