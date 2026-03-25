@@ -31,7 +31,14 @@ export default function AboutPage({ onBack, onContact }: Props) {
         <section>
           <h2 className="font-bold text-base mb-2 text-fg">點解只用 RSS？</h2>
           <p className="text-fg-muted">
-            RSS 係出版方主動提供嘅聯播格式，我哋唔會爬取網頁全文，尊重版權同各站條款。收錄嘅訂閱網址由本站設定，可随时增減。
+            RSS 係出版方主動提供嘅聯播格式，我哋唔會爬取網頁全文，尊重版權同各站條款。收錄嘅訂閱網址由本站設定，可隨時增減。
+          </p>
+        </section>
+
+        <section>
+          <h2 className="font-bold text-base mb-2 text-fg">點樣「更新」見到嘅新聞？</h2>
+          <p className="text-fg-muted">
+            撳右上角<strong>重新整理</strong>圖示，會向伺服器再要一次列表；唔使安裝任何嘢。RSS 入庫（拉新聞入資料庫）由後台<strong>定時</strong>做，一般唔開放公開按鈕，避免濫用。
           </p>
         </section>
 

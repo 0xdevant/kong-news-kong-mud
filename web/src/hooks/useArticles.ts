@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { isSearchQueryAllowed } from "../utils/searchQuery";
 
 export interface Article {
   id: string;
@@ -16,6 +17,8 @@ export interface Article {
 export interface CategoryInfo {
   id: string;
   label: string;
+  /** Emoji — same pattern as ho-lou-sou (`/api/init` returns `icon`) */
+  icon?: string;
   count: number;
 }
 
@@ -113,13 +116,14 @@ export function useSearch() {
   const [searching, setSearching] = useState(false);
 
   const search = useCallback(async (query: string) => {
-    if (query.length < 2) {
+    const q = query.trim();
+    if (!isSearchQueryAllowed(q)) {
       setResults([]);
       return;
     }
     setSearching(true);
     try {
-      const url = `${API_BASE}/api/search?q=${encodeURIComponent(query)}`;
+      const url = `${API_BASE}/api/search?q=${encodeURIComponent(q)}`;
       const data = await cachedFetch<{
         success: boolean;
         articles: Article[];

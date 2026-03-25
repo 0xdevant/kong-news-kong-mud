@@ -37,7 +37,15 @@ export default function SourceFilter({
             }`}
           >
             {s.source_name}{" "}
-            <span className="opacity-75">({s.count})</span>
+            <span
+              className={`tabular-nums ${
+                active === s.source_name
+                  ? "text-white/90"
+                  : "text-fg/80 dark:text-fg-muted"
+              }`}
+            >
+              ({s.count})
+            </span>
           </button>
         ))}
       </div>

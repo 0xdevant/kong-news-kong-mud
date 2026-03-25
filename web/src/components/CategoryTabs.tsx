@@ -1,5 +1,8 @@
 import type { CategoryInfo } from "../hooks/useArticles";
 
+/** 與 ho-lou-sou (`~/Desktop/ho-lou-sou`) `CategoryTabs` + `/api/init` 的 `icon` 欄位一致：emoji + 五欄 grid + `bg-brand/10` 選中 */
+const ALL_ICON = "🔥";
+
 export default function CategoryTabs({
   categories,
   active,
@@ -9,34 +12,59 @@ export default function CategoryTabs({
   active: string | null;
   onSelect: (id: string | null) => void;
 }) {
+  const items = [
+    { id: null as string | null, icon: ALL_ICON, label: "全部", count: 0 },
+    ...categories.map((c) => ({
+      id: c.id,
+      icon: c.icon ?? "📌",
+      label: c.label,
+      count: c.count,
+    })),
+  ];
+
   return (
-    <div className="flex gap-2 overflow-x-auto no-scrollbar px-4 pb-3">
-      <button
-        type="button"
-        onClick={() => onSelect(null)}
-        className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-          active === null
-            ? "btn-active"
-            : "bg-elevated text-fg-muted hover:bg-card-hover"
-        }`}
-      >
-        全部
-      </button>
-      {categories.map((c) => (
-        <button
-          key={c.id}
-          type="button"
-          onClick={() => onSelect(c.id)}
-          className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            active === c.id
-              ? "btn-active"
-              : "bg-elevated text-fg-muted hover:bg-card-hover"
-          }`}
-        >
-          {c.label}
-          <span className="text-fg-muted text-xs ml-1">({c.count})</span>
-        </button>
-      ))}
+    <div className="grid grid-cols-5 gap-1 px-4 pt-3 pb-1 sm:pb-3">
+      {items.map((cat) => {
+        const isActive = cat.id === active;
+        return (
+          <button
+            key={cat.id ?? "__all"}
+            type="button"
+            onClick={() => onSelect(cat.id)}
+            className={`flex flex-col items-center gap-1 py-2 rounded-xl transition-all ${
+              isActive
+                ? "bg-brand/10"
+                : "hover:bg-gray-50 dark:hover:bg-card-hover"
+            }`}
+          >
+            <span
+              className={`text-2xl leading-none transition-transform ${isActive ? "scale-110" : ""}`}
+            >
+              {cat.icon}
+            </span>
+            <span
+              className={`font-medium leading-tight text-center ${
+                isActive ? "text-brand" : "text-fg-muted"
+              } ${
+                cat.label && cat.label.length > 4
+                  ? "text-[9px] min-[400px]:text-[11px]"
+                  : "text-[11px]"
+              }`}
+            >
+              {cat.label}
+            </span>
+            {cat.count > 0 && (
+              <span
+                className={`text-[10px] leading-none ${
+                  isActive ? "text-brand/70" : "text-fg-muted/50"
+                }`}
+              >
+                {cat.count}
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

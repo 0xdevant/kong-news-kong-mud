@@ -3,11 +3,16 @@
   "private": true,
   "workspaces": ["worker", "web"],
   "scripts": {
+    "dev": "concurrently -k -n worker,web -c blue,magenta \"npm run dev --prefix worker\" \"npm run dev --prefix web\"",
+    "dev:remote": "concurrently -k -n worker,web -c blue,magenta \"npm run dev:remote --prefix worker\" \"npm run dev --prefix web\"",
+    "refresh:local": "node scripts/refresh-local.mjs",
+    "refresh:prod": "node scripts/refresh-local.mjs --prod",
     "deploy": "npm run deploy:worker && npm run deploy:web",
     "deploy:worker": "cd worker && npm run deploy",
     "deploy:web": "cd web && npm run build && npx wrangler pages deploy dist --project-name kong-news-kong-mud --commit-dirty=true"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "tsx": "^4.21.0"
   }
 }

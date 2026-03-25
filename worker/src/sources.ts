@@ -82,12 +82,13 @@ export const HK_NEWS_FEEDS: SourceConfig[] = [
     urls: ["https://liber-research.com/feed/"],
     categoryMap: LIBER_MAP,
     defaultCategory: "其他",
+    wordpressFeaturedFallback: true,
   },
-  // 獨立媒體：請在官方確認有效 RSS 後再加入，例如部分環境使用 /rss.xml
-  // {
-  //   name: "獨立媒體",
-  //   urls: ["https://www.inmediahk.net/rss.xml"],
-  //   categoryMap: { 政經: "時事", 國際: "國際", 社區: "本地", 保育: "其他", 生活: "其他", 文藝: "其他", 體育: "其他" },
-  //   defaultCategory: "其他",
-  // },
+  {
+    name: "獨立媒體",
+    urls: ["https://www.inmediahk.net/rss.xml"],
+    categoryMap: {},
+    defaultCategory: "時事",
+    inmediaPathCategory: true,
+  },
 ];

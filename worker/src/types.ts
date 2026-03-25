@@ -13,6 +13,10 @@ export interface Env {
   CONTACT_EMAIL_TO?: string;
   /** Resend "from" (verified domain in Resend dashboard) */
   RESEND_FROM?: string;
+  /** Set to "false" to skip fetching og:image for articles with no usable RSS image */
+  FETCH_OG_IMAGE?: string;
+  /** Max og:image page fetches per ingest (default 25) */
+  FETCH_OG_IMAGE_MAX?: string;
 }
 
 /** Normalized article row (RSS-only; link out for full story) */
@@ -36,4 +40,13 @@ export interface SourceConfig {
   urls: string[];
   categoryMap: Record<string, NewsCategory>;
   defaultCategory: NewsCategory;
+  /**
+   * When RSS has no usable `<img>` (common for FB embed HTML), call WordPress
+   * `wp-json` featured media. Not subject to FETCH_OG_IMAGE_MAX.
+   */
+  wordpressFeaturedFallback?: boolean;
+  /**
+   * Drupal 獨立媒體：RSS 無 `<category>`，用 `/node/{版面}/…` 首段推斷分類。
+   */
+  inmediaPathCategory?: boolean;
 }

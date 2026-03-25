@@ -8,9 +8,16 @@ import {
   cleanOldArticles,
   purgeExcludedArticles,
 } from "./db";
-import { fetchRssFeeds } from "./rss";
+import {
+  enrichArticlesWithOgImages,
+  fetchRssFeeds,
+  backfillWordPressFeaturedForStoredArticles,
+  backfillInmediaOgImages,
+} from "./rss";
 import { filterArticles } from "./filter";
 import { HK_NEWS_FEEDS } from "./sources";
+import { isSearchQueryAllowed } from "./searchQuery";
+import { proxyInmediaImage } from "./proxyImage";
 
 type HonoEnv = { Bindings: Env };
 
@@ -37,11 +44,42 @@ app.use(
 app.use("/api/*", async (c, next) => {
   await next();
   if (c.req.method === "GET" && c.res.status === 200) {
+    /** 唔覆寫 proxy 圖片嘅 `Cache-Control` */
+    if (c.req.path.includes("proxy-image")) return;
     c.res.headers.set(
       "Cache-Control",
       "public, s-maxage=300, stale-while-revalidate=3600",
     );
   }
+});
+
+/**
+ * 獨媒圖片經 Sucuri：瀏覽器由 localhost / 第三方網域直連 `files/` 常 403。
+ * 只允許 `https://www.inmediahk.net/` 下資源，由 Worker 代拉。
+ */
+app.get("/api/proxy-image", async (c) => {
+  const raw = c.req.query("u") || "";
+  let target: URL;
+  try {
+    target = new URL(raw);
+  } catch {
+    return c.text("Invalid URL", 400);
+  }
+  if (
+    target.protocol !== "https:" ||
+    target.hostname !== "www.inmediahk.net"
+  ) {
+    return c.text("Forbidden", 403);
+  }
+  const p = target.pathname;
+  /** RSS 多用 `/files/`；`og:image` 有時係 Drupal `sites/default/files/` */
+  if (
+    !p.startsWith("/files/") &&
+    !p.startsWith("/sites/default/files/")
+  ) {
+    return c.text("Forbidden", 403);
+  }
+  return proxyInmediaImage(target.href, c.req.raw.headers);
 });
 
 app.get("/api/articles", async (c) => {
@@ -71,22 +109,36 @@ app.get("/api/init", async (c) => {
   ]);
 
   const categories = [
-    { id: "本地", label: "本地", count: counts["本地"] || 0 },
-    { id: "國際", label: "國際", count: counts["國際"] || 0 },
-    { id: "時事", label: "時事", count: counts["時事"] || 0 },
-    { id: "其他", label: "其他", count: counts["其他"] || 0 },
+    { id: "本地", label: "本地", icon: "📍", count: counts["本地"] || 0 },
+    { id: "國際", label: "國際", icon: "🌍", count: counts["國際"] || 0 },
+    { id: "時事", label: "時事", icon: "🇭🇰", count: counts["時事"] || 0 },
+    { id: "其他", label: "其他", icon: "🗂️", count: counts["其他"] || 0 },
   ];
+
+  const dbBySource = new Map(
+    sourcesResult.results.map((r) => [r.source_name, r.count]),
+  );
+  const configured = HK_NEWS_FEEDS.map((cfg) => ({
+    source_name: cfg.name,
+    count: dbBySource.get(cfg.name) ?? 0,
+  }));
+  const configuredNames = new Set(HK_NEWS_FEEDS.map((cfg) => cfg.name));
+  const extras = sourcesResult.results
+    .filter((r) => !configuredNames.has(r.source_name))
+    .sort((a, b) => b.count - a.count);
+  const sources = [...configured, ...extras];
 
   return c.json({
     success: true,
     categories,
-    sources: sourcesResult.results,
+    sources,
   });
 });
 
 app.get("/api/search", async (c) => {
-  const q = c.req.query("q") || "";
-  if (q.length < 2) return c.json({ success: true, articles: [], count: 0 });
+  const q = (c.req.query("q") || "").trim();
+  if (!isSearchQueryAllowed(q))
+    return c.json({ success: true, articles: [], count: 0 });
 
   const result = await c.env.DB.prepare(
     `SELECT * FROM articles WHERE title LIKE ? OR IFNULL(description,'') LIKE ? OR IFNULL(labels,'') LIKE ?
@@ -103,11 +155,17 @@ app.get("/api/search", async (c) => {
 });
 
 app.get("/api/health", async (c) => {
-  const result = await c.env.DB.prepare(
-    `SELECT source_name, COUNT(*) as count, MAX(fetched_at) as latest
-     FROM articles GROUP BY source_name ORDER BY count DESC`,
-  ).all<{ source_name: string; count: number; latest: number }>();
+  const [result, globalLatestRow] = await Promise.all([
+    c.env.DB.prepare(
+      `SELECT source_name, COUNT(*) as count, MAX(fetched_at) as latest
+       FROM articles GROUP BY source_name ORDER BY count DESC`,
+    ).all<{ source_name: string; count: number; latest: number }>(),
+    c.env.DB.prepare(
+      "SELECT MAX(fetched_at) as latest FROM articles",
+    ).first<{ latest: number | null }>(),
+  ]);
   const now = Math.floor(Date.now() / 1000);
+  const gl = globalLatestRow?.latest ?? null;
   const sources = result.results.map((r) => ({
     source: r.source_name,
     count: r.count,
@@ -119,6 +177,12 @@ app.get("/api/health", async (c) => {
   return c.json({
     status: allHealthy ? "ok" : "degraded",
     totalArticles: total,
+    configuredSources: HK_NEWS_FEEDS.length,
+    latestIngestUnix: gl,
+    latestIngestAgoHours:
+      gl != null
+        ? Math.round(((now - gl) / 3600) * 10) / 10
+        : null,
     sources,
   });
 });
@@ -202,7 +266,10 @@ async function runRssIngestion(env: Env) {
   );
   const combined = batches.flat();
   const filtered = filterArticles(combined, env);
+  await enrichArticlesWithOgImages(filtered, env);
   const inserted = await upsertArticles(env, filtered);
+  const backfillWp = await backfillWordPressFeaturedForStoredArticles(env);
+  const backfillInmedia = await backfillInmediaOgImages(env);
   const cleaned = await cleanOldArticles(env, 14);
   return {
     inserted,
@@ -210,6 +277,8 @@ async function runRssIngestion(env: Env) {
     afterFilter: filtered.length,
     cleaned,
     feeds: HK_NEWS_FEEDS.length,
+    backfillWp,
+    backfillInmedia,
   };
 }
 
@@ -233,7 +302,9 @@ export default {
 
     ctx.waitUntil(
       runRssIngestion(env).then((r) =>
-        console.log(`Hourly RSS: fetched ${r.fetched}, inserted ${r.inserted}`),
+        console.log(
+          `Hourly RSS: fetched ${r.fetched}, inserted ${r.inserted}, backfillWp ${r.backfillWp}, backfillInmedia ${r.backfillInmedia}`,
+        ),
       ),
     );
   },

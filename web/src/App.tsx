@@ -9,6 +9,10 @@ import SearchBar from "./components/SearchBar";
 import AboutPage from "./components/AboutPage";
 import ContactPage from "./components/ContactPage";
 import DisclaimerPage from "./components/DisclaimerPage";
+import { isSearchQueryAllowed } from "./utils/searchQuery";
+
+/** Same-origin `/api` in dev (Vite proxy); set `VITE_API_URL` for prod web pointing at Worker. */
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 export default function App() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -36,7 +40,7 @@ export default function App() {
 
   const handleSearch = useCallback(
     (q: string) => {
-      setIsSearching(q.length >= 2);
+      setIsSearching(isSearchQueryAllowed(q.trim()));
       search(q);
     },
     [search],
@@ -45,6 +49,17 @@ export default function App() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
+      if (import.meta.env.DEV) {
+        const r = await fetch(`${API_BASE}/api/refresh`, { method: "POST" });
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({}));
+          console.warn(
+            "POST /api/refresh failed (若設咗 REFRESH_SECRET，請用終端 npm run refresh:local)",
+            r.status,
+            err,
+          );
+        }
+      }
       await Promise.all([refresh(), refreshInit()]);
     } catch {
       /* ignore */
@@ -77,7 +92,7 @@ export default function App() {
     );
 
   return (
-    <div className="min-h-screen max-w-2xl mx-auto pb-8">
+    <div className="min-h-screen max-w-4xl mx-auto pb-8">
       <header className="sticky top-0 z-10 bg-surface/80 backdrop-blur-lg border-b border-border">
         <div className="flex items-center justify-between px-4 py-3">
           <button
@@ -89,12 +104,25 @@ export default function App() {
               setIsSearching(false);
               setShowFavs(false);
             }}
-            className="text-left"
+            className="text-left flex items-center gap-3 min-w-0"
           >
-            <h1 className="text-xl font-bold text-fg tracking-tight">
-              港聞講乜
-            </h1>
-            <p className="text-xs text-fg-muted">香港本地媒體新聞一覽 · 點擊前往原文</p>
+            <img
+              src="/logo.png"
+              alt=""
+              width={36}
+              height={36}
+              className="w-9 h-9 rounded-xl shrink-0 object-contain"
+              decoding="async"
+              aria-hidden
+            />
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-fg tracking-tight">
+                港聞講乜
+              </h1>
+              <p className="text-xs text-fg-muted">
+                香港本地媒體新聞一覽 · 點擊前往原文
+              </p>
+            </div>
           </button>
           <div className="flex items-center gap-1">
             <button
@@ -165,7 +193,16 @@ export default function App() {
               onClick={handleRefresh}
               disabled={refreshing}
               className="p-2 rounded-full hover:bg-elevated dark:hover:bg-card-hover disabled:opacity-50 transition-colors"
-              aria-label="重新整理"
+              aria-label={
+                import.meta.env.DEV
+                  ? "重新整理（本機會先拉取 RSS 再更新列表）"
+                  : "重新整理列表"
+              }
+              title={
+                import.meta.env.DEV
+                  ? "重新整理：本機會先 POST /api/refresh 拉 RSS，再更新列表"
+                  : "重新整理：向伺服器載入最新文章列表"
+              }
             >
               <svg
                 className={`w-5 h-5 text-fg-muted${refreshing ? " animate-spin" : ""}`}

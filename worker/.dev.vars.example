@@ -7,3 +7,6 @@
 # RESEND_API_KEY=
 # CONTACT_EMAIL_TO=you@example.com
 # RESEND_FROM=港聞講乜 <onboarding@resend.dev>
+# Optional: skip extra HTTP fetches for og:image when RSS has no photo (default: enabled)
+# FETCH_OG_IMAGE=false
+# FETCH_OG_IMAGE_MAX=25

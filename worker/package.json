@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --port 8788",
+    "dev:remote": "wrangler dev --port 8788 --remote",
     "deploy": "wrangler deploy",
-    "db:migrate": "wrangler d1 execute hk-news-rss-db --local --file=schema.sql"
+    "db:migrate": "wrangler d1 execute hk-news-rss-db --local --file=schema.sql",
+    "refresh:local": "node ../scripts/refresh-local.mjs"
   },
   "dependencies": {
     "hono": "^4.12.8",

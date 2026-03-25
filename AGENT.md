@@ -8,6 +8,7 @@ HK news **RSS aggregator** (no HTML crawling). Teasers only; users open **原文
 |------|------|
 | `worker/` | Cloudflare **Worker** — Hono API, RSS ingest, D1, cron |
 | `web/` | **Vite + React** — UI; `web/functions/api/[[path]].ts` proxies `/api/*` → Worker (same-origin in prod) |
+| **好路數** UI 對照（本機） | `../ho-lou-sou` → `/Users/ant/Desktop/ho-lou-sou` — 姊妹專案；講「跟好路數」時以呢個 repo 為準，唔靠猜測。見 `.cursor/rules/ho-lou-sou-reference.mdc` |
 
 ## Cloudflare names (current)
 
@@ -19,8 +20,11 @@ HK news **RSS aggregator** (no HTML crawling). Teasers only; users open **原文
 
 ## Commands
 
-- Root: `npm run deploy` → Worker deploy, then web build + Pages upload.
-- Dev: `cd worker && npm run dev` (8787); `cd web && npm run dev` (5173, proxies `/api`). First load empty until `POST /api/refresh` on the Worker (or cron).
+- Root: `npm run deploy` → Worker deploy, then web build + Pages upload. After changing RSS/category logic or first deploy, **`POST` the Worker `/api/refresh`** (remote) so D1 has rows with `本地` / `國際` etc.; see README **After deploy**.
+- Dev: **`npm run dev`** from repo root (Worker **8788** + Vite **5173** or next free port; `/api` proxied in [`web/vite.config.ts`](web/vite.config.ts)). Or two terminals: `cd worker && npm run dev`, `cd web && npm run dev`. First load empty until ingest: **`npm run refresh:local`** (works from **repo root or `worker/`**), or header **重新整理** in dev (also `POST /api/refresh`), or cron.
+- **Local D1 ≠ remote D1:** default `wrangler dev` uses **local** persistence; production uses **remote** `hk-news-rss-db`. Category counts on [news.clawify.dev](https://news.clawify.dev) won’t match local until local ingest runs, or use **`npm run dev:remote`** (Worker `wrangler dev --remote`) to hit the same remote D1 as prod.
+- **Tab counts** (`本地` / `國際` / …): `GROUP BY category` on D1; categories from RSS `<category>` + maps in [`worker/src/sources.ts`](worker/src/sources.ts). Zeros usually mean no successful ingest to that DB.
+- **Covers:** RSS often has no real `<img>`; ingest may fill **og:image** (see `FETCH_OG_IMAGE*` in `worker/.dev.vars.example`).
 
 ## Secrets & auth
 

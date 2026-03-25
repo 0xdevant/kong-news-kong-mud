@@ -34,8 +34,7 @@ export default function ArticleList({
       <div className="px-4 py-12 text-center text-fg-muted">
         {emptyMessage ?? (
           <>
-            暫無文章。請確認 Worker 已執行{" "}
-            <code className="text-xs">POST /api/refresh</code> 或等待定時更新。
+            暫無文章。請撳右上角「重新整理」由伺服器再載入一次；若仍然空白，可能資料庫尚未更新，請稍後再試。
           </>
         )}
       </div>
@@ -43,9 +42,9 @@ export default function ArticleList({
   }
 
   return (
-    <ul className="px-4 space-y-3 pb-8">
+    <ul className="px-4 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 pb-8">
       {articles.map((a) => (
-        <li key={a.id}>
+        <li key={a.id} className="min-w-0">
           <ArticleCard
             article={a}
             isFav={isFav?.(a.id)}
