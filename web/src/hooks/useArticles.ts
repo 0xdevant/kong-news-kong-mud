@@ -82,23 +82,30 @@ export function useInit() {
   const [categories, setCategories] = useState<CategoryInfo[]>([]);
   const [sources, setSources] = useState<SourceInfo[]>([]);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     const url = `${API_BASE}/api/init`;
-    cachedFetch<{
-      success: boolean;
-      categories: CategoryInfo[];
-      sources: SourceInfo[];
-    }>(url)
-      .then((data) => {
-        if (data.success) {
-          setCategories(data.categories);
-          setSources(data.sources);
-        }
-      })
+    return fetch(url)
+      .then((r) => r.json())
+      .then(
+        (data: {
+          success: boolean;
+          categories: CategoryInfo[];
+          sources: SourceInfo[];
+        }) => {
+          if (data.success) {
+            setCategories(data.categories);
+            setSources(data.sources);
+          }
+        },
+      )
       .catch(() => {});
   }, []);
 
-  return { categories, sources };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return { categories, sources, refreshInit: load };
 }
 
 export function useSearch() {

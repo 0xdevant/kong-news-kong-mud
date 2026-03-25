@@ -15,7 +15,7 @@ export default function App() {
   const [page, setPage] = useState<"home" | "about">("home");
   const { isDark, toggle: toggleTheme } = useTheme();
 
-  const { categories, sources } = useInit();
+  const { categories, sources, refreshInit } = useInit();
   const {
     articles: feedArticles,
     loading,
@@ -38,7 +38,7 @@ export default function App() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      await refresh();
+      await Promise.all([refresh(), refreshInit()]);
     } catch {
       /* ignore */
     } finally {
