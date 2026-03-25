@@ -182,9 +182,9 @@ app.post("/api/contact", async (c) => {
         body: JSON.stringify({
           from:
             c.env.RESEND_FROM ||
-            "香港媒體 RSS <onboarding@resend.dev>",
+            "港聞講乜 <onboarding@resend.dev>",
           to,
-          subject: `香港媒體 RSS 聯絡 — ${name}`,
+          subject: `港聞講乜 聯絡 — ${name}`,
           text: `來自: ${name}\nEmail: ${email}\n\n${message}`,
         }),
       }).catch(() => {});

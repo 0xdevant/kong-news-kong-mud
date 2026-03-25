@@ -106,7 +106,7 @@ export async function fetchRssFeeds(config: SourceConfig): Promise<Article[]> {
       const resp = await fetch(feedUrl, {
         headers: {
           "User-Agent":
-            "Mozilla/5.0 (compatible; hk-news-rss/1.0; RSS reader; +https://github.com/)",
+            "Mozilla/5.0 (compatible; gangwen-gongmat/1.0; RSS reader)",
           Accept: "application/rss+xml, application/xml, text/xml, */*",
         },
       });

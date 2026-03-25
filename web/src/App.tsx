@@ -84,9 +84,9 @@ export default function App() {
             className="text-left"
           >
             <h1 className="text-xl font-bold text-fg tracking-tight">
-              香港媒體 RSS
+              港聞講乜
             </h1>
-            <p className="text-xs text-fg-muted">官方訂閱匯總 · 點擊前往原文</p>
+            <p className="text-xs text-fg-muted">香港媒體 RSS 一覽 · 點擊前往原文</p>
           </button>
           <div className="flex items-center gap-1">
             <button

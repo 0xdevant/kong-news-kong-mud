@@ -6,4 +6,4 @@
 # Optional contact form → Resend (messages always stored in D1)
 # RESEND_API_KEY=
 # CONTACT_EMAIL_TO=you@example.com
-# RESEND_FROM=香港媒體 RSS <onboarding@resend.dev>
+# RESEND_FROM=港聞講乜 <onboarding@resend.dev>

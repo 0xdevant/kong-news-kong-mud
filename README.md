@@ -1,4 +1,4 @@
-# 香港媒體 RSS 一覽
+# 港聞講乜
 
 Aggregates **official RSS feeds** from Hong Kong outlets (no HTML crawling). Each item shows the **title** plus a **short teaser** (~72 characters) from the feed; the UI shows **one line** and pushes users to **閱讀全文** on the publisher’s site.
 
@@ -41,6 +41,18 @@ npm run deploy
 ```
 
 This runs `deploy:worker` then `deploy:web` (build with `VITE_API_URL` + Pages upload).
+
+## Auto deploy (GitHub Actions)
+
+Every push to **`main`** runs [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) and deploys the Worker + Pages.
+
+**One-time setup:** In the GitHub repo → **Settings → Secrets and variables → Actions** → **New repository secret**:
+
+| Name | Description |
+|------|-------------|
+| `CLOUDFLARE_API_TOKEN` | [Create](https://dash.cloudflare.com/profile/api-tokens) an API token with **Workers Scripts**, **Pages**, and **D1** (or use the **Edit Cloudflare Workers** template and add Pages if needed). |
+
+Push this project to GitHub on the `main` branch; each new commit triggers a deploy. Without the secret, the workflow fails until you add it.
 
 ## Development
 

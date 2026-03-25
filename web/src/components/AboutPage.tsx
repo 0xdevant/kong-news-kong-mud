@@ -21,7 +21,7 @@ export default function AboutPage({ onBack, onContact }: Props) {
 
       <main className="px-4 py-6 space-y-6 text-sm text-fg leading-relaxed">
         <section>
-          <h2 className="font-bold text-base mb-2 text-fg">香港媒體 RSS 係咩嚟？</h2>
+          <h2 className="font-bold text-base mb-2 text-fg">「港聞講乜」係咩嚟？</h2>
           <p className="text-fg-muted">
             本站聚合香港多間媒體<strong>官方公開嘅 RSS 訂閱</strong>
             ，列出標題同極短摘要，方便你喺一個介面瀏覽最新消息；完整報道請前往各媒體網站閱讀，以支持原出版方。

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-const KEY = "hk_news_theme";
+const KEY = "gangwen_theme";
 
 export function useTheme() {
   const [isDark, setIsDark] = useState(() => {
