@@ -8,17 +8,19 @@ Based on the same stack patterns as **ho-lou-sou** (see `../ho-lou-sou` on your 
 
 | What | URL |
 |------|-----|
-| **Website** | [https://hk-news-rss-web.pages.dev](https://hk-news-rss-web.pages.dev) |
-| **API (Worker)** | `https://hk-news-rss-worker.cloudflare-underfeed523.workers.dev` |
+| **Website** | [https://kong-news-kong-mud-web.pages.dev](https://kong-news-kong-mud-web.pages.dev) |
+| **API (Worker)** | `https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev` |
 
-CORS: `PAGES_ORIGIN` is set to `https://hk-news-rss-web.pages.dev` in [`worker/wrangler.toml`](worker/wrangler.toml). If you add a **custom domain** on Pages, add that origin to `PAGES_ORIGIN` and redeploy the Worker.
+The **D1 database** is still named `hk-news-rss-db` in Cloudflare (same `database_id` in [`worker/wrangler.toml`](worker/wrangler.toml)); only app/Worker/Pages names changed to `kong-news-kong-mud-*`.
+
+CORS: `PAGES_ORIGIN` is set to `https://kong-news-kong-mud-web.pages.dev` in [`worker/wrangler.toml`](worker/wrangler.toml). If you add a **custom domain** on Pages, add that origin to `PAGES_ORIGIN` and redeploy the Worker.
 
 **Browser API calls** use same-origin `/api/*` via a [Pages Function](web/functions/api/[[path]].ts) that proxies to the Worker (avoids cross-origin issues with `workers.dev`).
 
 Populate or refresh the database manually (recommended once after first deploy):
 
 ```bash
-curl -X POST https://hk-news-rss-worker.cloudflare-underfeed523.workers.dev/api/refresh
+curl -X POST https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev/api/refresh
 ```
 
 Hourly cron also runs RSS ingestion; D1 was migrated on first deploy.

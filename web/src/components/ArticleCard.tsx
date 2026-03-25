@@ -12,9 +12,17 @@ function formatTime(a: Article): string {
   });
 }
 
-export default function ArticleCard({ article }: { article: Article }) {
+export default function ArticleCard({
+  article,
+  isFav,
+  onToggleFav,
+}: {
+  article: Article;
+  isFav?: boolean;
+  onToggleFav?: (id: string) => void;
+}) {
   return (
-    <article className="group bg-card rounded-xl border border-border shadow-sm shadow-black/[0.06] dark:shadow-none overflow-hidden">
+    <article className="group relative bg-card rounded-xl border border-border shadow-sm shadow-black/[0.06] dark:shadow-none overflow-hidden">
       <a
         href={article.source_url}
         target="_blank"
@@ -40,7 +48,7 @@ export default function ArticleCard({ article }: { article: Article }) {
                 {formatTime(article)}
               </time>
             </div>
-            <h2 className="text-base font-semibold text-fg leading-snug group-hover:text-accent transition-colors">
+            <h2 className="text-base font-semibold text-fg leading-snug group-hover:text-accent transition-colors pr-8">
               {article.title}
             </h2>
             {article.description && (
@@ -54,6 +62,36 @@ export default function ArticleCard({ article }: { article: Article }) {
           </div>
         </div>
       </a>
+      {onToggleFav && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleFav(article.id);
+          }}
+          className={`absolute top-3 right-3 z-[1] p-1.5 rounded-full shadow-sm border transition-colors ${
+            isFav
+              ? "bg-card border-red-200 dark:border-red-800"
+              : "bg-card border-border"
+          }`}
+          aria-label={isFav ? "取消收藏" : "收藏"}
+        >
+          <svg
+            className={`w-4 h-4 ${isFav ? "text-red-500" : "text-fg-muted"}`}
+            viewBox="0 0 24 24"
+            fill={isFav ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
+          </svg>
+        </button>
+      )}
     </article>
   );
 }

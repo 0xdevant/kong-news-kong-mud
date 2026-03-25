@@ -3,7 +3,7 @@
  * Update WORKER_API if your Worker URL changes.
  */
 const WORKER_API =
-  "https://hk-news-rss-worker.cloudflare-underfeed523.workers.dev";
+  "https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev";
 
 export async function onRequest(context: {
   request: Request;

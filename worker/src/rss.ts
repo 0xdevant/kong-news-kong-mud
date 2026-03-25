@@ -70,13 +70,24 @@ function parseRssItems(xml: string): RssItem[] {
   return items;
 }
 
+/** When an item has multiple RSS tags that map to different buckets, pick one winner.
+ * WordPress often lists a broad tag (e.g. 新聞→時事) before a specific one (本地時事→本地);
+ * first-match-only would never assign 本地/國際. Order: more “place/topic” specific first. */
+const CATEGORY_PRIORITY: NewsCategory[] = ["本地", "國際", "時事", "其他"];
+
 function categorizeItem(
   categories: string[],
   categoryMap: Record<string, NewsCategory>,
   defaultCategory: NewsCategory,
 ): NewsCategory {
+  const buckets = new Set<NewsCategory>();
   for (const cat of categories) {
-    if (categoryMap[cat]) return categoryMap[cat];
+    const mapped = categoryMap[cat];
+    if (mapped) buckets.add(mapped);
+  }
+  if (buckets.size === 0) return defaultCategory;
+  for (const p of CATEGORY_PRIORITY) {
+    if (buckets.has(p)) return p;
   }
   return defaultCategory;
 }

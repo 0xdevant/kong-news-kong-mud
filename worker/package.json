@@ -1,5 +1,5 @@
 {
-  "name": "hk-news-rss-worker",
+  "name": "kong-news-kong-mud-worker",
   "private": true,
   "type": "module",
   "scripts": {

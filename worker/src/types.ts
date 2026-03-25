@@ -1,7 +1,7 @@
 export interface Env {
   DB: D1Database;
   WORKER_ENV: string;
-  /** Optional: your Cloudflare Pages URL for CORS (e.g. https://hk-news.pages.dev) */
+  /** Optional: your Cloudflare Pages URL for CORS (e.g. https://your-app.pages.dev) */
   PAGES_ORIGIN?: string;
   REFRESH_SECRET?: string;
   /** JSON array or comma-separated exclude keywords (title/description/labels) */
