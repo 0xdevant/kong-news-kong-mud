@@ -1,6 +1,6 @@
 # 香港媒體 RSS 一覽
 
-Aggregates **official RSS feeds** from Hong Kong outlets (no HTML crawling). Headlines and short excerpts are stored; users open **original articles** on each publisher’s site.
+Aggregates **official RSS feeds** from Hong Kong outlets (no HTML crawling). Each item shows the **title** plus a **short teaser** (~72 characters) from the feed; the UI shows **one line** and pushes users to **閱讀全文** on the publisher’s site.
 
 Based on the same stack patterns as **ho-lou-sou** (see `../ho-lou-sou` on your machine): **Vite + React** (Cloudflare Pages) and **Hono** on a **Cloudflare Worker** with **D1**.
 

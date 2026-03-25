@@ -44,12 +44,12 @@ export default function ArticleCard({ article }: { article: Article }) {
               {article.title}
             </h2>
             {article.description && (
-              <p className="text-sm text-text-muted mt-1.5 line-clamp-3">
+              <p className="text-xs text-text-muted mt-1.5 line-clamp-1">
                 {article.description}
               </p>
             )}
             <p className="text-xs text-brand mt-2 font-medium">
-              前往原文 →
+              閱讀全文（原文網站）→
             </p>
           </div>
         </div>

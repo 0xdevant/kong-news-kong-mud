@@ -41,6 +41,16 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
 
+/** One-line teaser only — keeps full reporting on the publisher’s site */
+const TEASER_MAX_CHARS = 72;
+
+function toTeaser(plain: string): string | null {
+  const t = plain.replace(/\s+/g, " ").trim();
+  if (!t) return null;
+  if (t.length <= TEASER_MAX_CHARS) return t;
+  return t.slice(0, TEASER_MAX_CHARS - 1) + "…";
+}
+
 function parseRssItems(xml: string): RssItem[] {
   const items: RssItem[] = [];
   const itemRegex = /<item>([\s\S]*?)<\/item>/g;
@@ -120,7 +130,7 @@ export async function fetchRssFeeds(config: SourceConfig): Promise<Article[]> {
           config.defaultCategory,
         );
         const imageUrl = extractFirstImage(item.description);
-        const desc = stripHtml(item.description).slice(0, 400);
+        const desc = toTeaser(stripHtml(item.description));
 
         articles.push({
           id: stableId(prefix, item.guid, item.link),
