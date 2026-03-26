@@ -4,12 +4,16 @@ import type { Article } from "../hooks/useArticles";
 /** Same as `useArticles` — dev 用 Vite proxy 嘅 `/api` */
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
-/** 獨媒圖：直連常被 Sucuri 擋；凡 `www.inmediahk.net` 靜態路徑交 Worker 代理（路徑白名單喺後端） */
+/**
+ * 獨媒圖：localhost 直連常被 Sucuri 擋，dev 用 Worker 代拉。
+ * Production Worker 出口係 Cloudflare IP，上游有時擋 bot → proxy 反而 502；正式站用瀏覽器直連同一個 `https://www.inmediahk.net/files/…` 通常正常。
+ */
 function coverImageSrc(imageUrl: string | null): string | null {
   if (!imageUrl) return null;
   try {
     const u = new URL(imageUrl);
     if (u.hostname === "www.inmediahk.net") {
+      if (import.meta.env.PROD) return imageUrl;
       return `${API_BASE}/api/proxy-image?u=${encodeURIComponent(imageUrl)}`;
     }
   } catch {
@@ -57,6 +61,10 @@ export default function ArticleCard({
 }) {
   const [coverFailed, setCoverFailed] = useState(false);
   const coverSrc = coverImageSrc(article.image_url);
+  /** Prod 獨媒直連：減少因 Referer 觸發嘅 hotlink 擋 */
+  const inmediaDirect =
+    import.meta.env.PROD &&
+    Boolean(article.image_url?.includes("inmediahk.net"));
   const showImage = Boolean(coverSrc) && !coverFailed;
 
   return (
@@ -75,6 +83,7 @@ export default function ArticleCard({
                 alt={article.title.slice(0, 200)}
                 className="h-full w-full object-contain object-center"
                 loading="lazy"
+                referrerPolicy={inmediaDirect ? "no-referrer" : undefined}
                 onError={() => setCoverFailed(true)}
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent dark:from-black/40" />
