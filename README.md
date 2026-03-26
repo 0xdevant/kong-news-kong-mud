@@ -9,7 +9,7 @@ Based on the same stack patterns as **ho-lou-sou** (reference repo: **`/Users/an
 | What | URL |
 |------|-----|
 | **Website** | [https://news.clawify.dev](https://news.clawify.dev) (custom domain on Pages; `kong-news-kong-mud.pages.dev` still works as the default Pages host) |
-| **API (Worker)** | `https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev` |
+| **API** | 瀏覽器用 **same-origin** `https://news.clawify.dev/api/*`；本機 `curl` / `npm run refresh:prod` 亦建議用同一個 host（經 Pages Function 轉發），避免依賴 `*.workers.dev` 公開 DNS。 |
 
 The **D1 database** is still named `hk-news-rss-db` in Cloudflare (same `database_id` in [`worker/wrangler.toml`](worker/wrangler.toml)); only app/Worker/Pages names changed to `kong-news-kong-mud-*`.
 
@@ -20,7 +20,7 @@ CORS: `PAGES_ORIGIN` is set to **`https://news.clawify.dev`** in [`worker/wrangl
 Populate or refresh the database manually (recommended once after first deploy):
 
 ```bash
-curl -X POST https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev/api/refresh
+curl -X POST https://news.clawify.dev/api/refresh
 ```
 
 Hourly cron also runs RSS ingestion; D1 was migrated on first deploy.
@@ -48,23 +48,23 @@ This runs **`deploy:worker`** (`cd worker && wrangler deploy`) then **`deploy:we
 
 分類數字嚟自 **遠端 D1** 已 ingest 嘅文章。RSS 邏輯同 `sources.ts` 對照表喺 **Worker**；若從未成功對遠端跑 ingest，或改咗分類／feed 未再入庫，tab 會係 0。
 
-**部署後請對遠端 Worker 手動跑一次入庫**（同 [Live](#live-deployed) 表嘅 Worker URL）：
+**部署後請對遠端手動跑一次入庫**（用自訂網域，同瀏覽器打 `/api` 一致）：
 
 ```bash
-curl -X POST https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev/api/refresh
+curl -X POST https://news.clawify.dev/api/refresh
 ```
 
 若已設定 **`REFRESH_SECRET`**：
 
 ```bash
-curl -X POST "https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev/api/refresh" \
+curl -X POST "https://news.clawify.dev/api/refresh" \
   -H "Authorization: Bearer YOUR_SECRET"
 ```
 
 **驗證分類：**
 
 ```bash
-curl -s "https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev/api/init"
+curl -s "https://news.clawify.dev/api/init"
 ```
 
 應見 `categories` 內 `本地` / `國際` 等嘅 `count`（視 RSS 而定；現時三個 feed 正常會有）。之後 cron 會每小時再拉。

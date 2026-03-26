@@ -4,8 +4,8 @@
  *
  * Usage:
  *   npm run refresh:local          → http://127.0.0.1:8788 (wrangler dev)
- *   npm run refresh:prod           → production workers.dev URL
- *   REFRESH_URL=https://…/api/refresh npm run refresh:local   → staging / 自訂
+ *   npm run refresh:prod           → https://news.clawify.dev/api/refresh（經 Pages Function，唔依賴 workers.dev DNS）
+ *   REFRESH_URL=https://…/api/refresh … 自訂（優先於上面）
  *
  * Optional: REFRESH_SECRET (or worker/.dev.vars) — must match Worker 上嘅 secret；未設則唔帶 Authorization。
  */
@@ -46,12 +46,22 @@ if (!secret && fs.existsSync(devVarsPath)) {
   }
 }
 
-const PROD_REFRESH =
-  "https://kong-news-kong-mud-worker.cloudflare-underfeed523.workers.dev/api/refresh";
+/** Same host as `PAGES_ORIGIN` / README — avoids ENOTFOUND on `*.workers.dev` if subdomain/DNS differs. */
+const PROD_REFRESH_DEFAULT = "https://news.clawify.dev/api/refresh";
 
 const url = (() => {
   if (process.env.REFRESH_URL) return process.env.REFRESH_URL;
-  if (process.argv.includes("--prod")) return PROD_REFRESH;
+  if (process.argv.includes("--prod")) {
+    if (fs.existsSync(devVarsPath)) {
+      try {
+        const vars = parseDevVars(fs.readFileSync(devVarsPath, "utf8"));
+        if (vars.REFRESH_URL) return vars.REFRESH_URL;
+      } catch {
+        /* ignore */
+      }
+    }
+    return PROD_REFRESH_DEFAULT;
+  }
   return "http://127.0.0.1:8788/api/refresh";
 })();
 const headers = { Accept: "application/json" };
