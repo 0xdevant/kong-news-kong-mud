@@ -1,4 +1,6 @@
 # Copy to .dev.vars for local wrangler dev (not committed)
+# Optional: override `npm run refresh:prod` target (default: https://news.clawify.dev/api/refresh)
+# REFRESH_URL=https://news.clawify.dev/api/refresh
 # REFRESH_SECRET=your-secret
 # PAGES_ORIGIN=https://news.clawify.dev
 # FILTER_EXCLUDE_KEYWORDS=keyword1, keyword2
