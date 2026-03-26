@@ -65,6 +65,14 @@ const LIBER_MAP: Record<string, NewsCategory> = {
 };
 
 export const HK_NEWS_FEEDS: SourceConfig[] = [
+  /** 放前：合併後 `enrichArticlesWithOgImages` 配額唔會永遠輪唔到獨媒 */
+  {
+    name: "獨立媒體",
+    urls: ["https://www.inmediahk.net/rss.xml"],
+    categoryMap: {},
+    defaultCategory: "時事",
+    inmediaPathCategory: true,
+  },
   {
     name: "香城公民媒體",
     urls: ["https://hkcitizenmedia.com/feed/"],
@@ -83,12 +91,5 @@ export const HK_NEWS_FEEDS: SourceConfig[] = [
     categoryMap: LIBER_MAP,
     defaultCategory: "其他",
     wordpressFeaturedFallback: true,
-  },
-  {
-    name: "獨立媒體",
-    urls: ["https://www.inmediahk.net/rss.xml"],
-    categoryMap: {},
-    defaultCategory: "時事",
-    inmediaPathCategory: true,
   },
 ];

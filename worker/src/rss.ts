@@ -15,7 +15,8 @@ interface RssItem {
 }
 
 function extractText(xml: string, tag: string): string {
-  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`);
+  const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`<${escaped}[^>]*>([\\s\\S]*?)</${escaped}>`, "i");
   const match = xml.match(re);
   if (!match) return "";
   let text = match[1];
@@ -25,7 +26,8 @@ function extractText(xml: string, tag: string): string {
 }
 
 function extractAllText(xml: string, tag: string): string[] {
-  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "g");
+  const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`<${escaped}[^>]*>([\\s\\S]*?)</${escaped}>`, "gi");
   const results: string[] = [];
   let match;
   while ((match = re.exec(xml)) !== null) {
@@ -173,6 +175,29 @@ function pickCandidate(raw: string | null, link: string): string | null {
   return abs;
 }
 
+/** Raw `<item>` blob 內掃出獨媒 `files/`、`sites/default/files/`（避開 Drupal namespace / extractText 變種導致冇 `content:encoded`）。 */
+function extractInmediaBestImageUrlFromRawBlob(blob: string): string | null {
+  if (!blob.includes("inmediahk.net")) return null;
+  const normalized = blob.replace(/&amp;/g, "&");
+  const re =
+    /https:\/\/www\.inmediahk\.net\/(?:files\/|sites\/default\/files\/)[^\s"'<>]+\.(?:jpe?g|png|gif|webp)/gi;
+  const seen = new Set<string>();
+  const candidates: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(normalized)) !== null) {
+    const u = m[0];
+    if (!seen.has(u)) {
+      seen.add(u);
+      candidates.push(u);
+    }
+  }
+  if (candidates.length === 0) return null;
+  candidates.sort(
+    (a, b) => rssImagePreferenceScore(b) - rssImagePreferenceScore(a),
+  );
+  return candidates[0];
+}
+
 function pickItemImageUrl(
   itemXml: string,
   link: string,
@@ -190,7 +215,15 @@ function pickItemImageUrl(
     extractMediaThumbnailUrl(itemXml) ||
     extractMediaContentImageUrl(itemXml) ||
     extractEnclosureImageUrl(itemXml);
-  return pickCandidate(fromMedia, link);
+  const pMedia = pickCandidate(fromMedia, link);
+  if (pMedia) return pMedia;
+  if (link.includes("inmediahk.net")) {
+    const raw = extractInmediaBestImageUrlFromRawBlob(
+      itemXml + description + contentEncoded,
+    );
+    return pickCandidate(raw, link);
+  }
+  return null;
 }
 
 function decodeBasicHtmlEntities(s: string): string {
@@ -381,7 +414,11 @@ export async function enrichArticlesWithOgImages(
     100,
     Math.max(0, parseInt(env.FETCH_OG_IMAGE_MAX || "25", 10) || 25),
   );
-  const targets = articles.filter((a) => !a.image_url).slice(0, max);
+  const without = articles.filter((a) => !a.image_url);
+  const inmedia = without.filter((a) => a.source_name === "獨立媒體");
+  const others = without.filter((a) => a.source_name !== "獨立媒體");
+  /** 合併順序：獨媒放前，避免 slice 被其他來源食晒 og 配額 */
+  const targets = [...inmedia, ...others].slice(0, max);
   const chunkSize = 5;
   for (let i = 0; i < targets.length; i += chunkSize) {
     const chunk = targets.slice(i, i + chunkSize);
