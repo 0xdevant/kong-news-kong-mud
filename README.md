@@ -29,10 +29,9 @@ Hourly cron also runs RSS ingestion; D1 was migrated on first deploy.
 
 Configured in [`worker/src/sources.ts`](worker/src/sources.ts):
 
-- [香城公民媒體](https://hkcitizenmedia.com/feed/)
-- [綠豆 Green Bean Media](https://greenbean.media/feed/)
+- [獨立媒體](https://www.inmediahk.net/rss.xml)、[香城公民媒體](https://hkcitizenmedia.com/feed/)、[綠豆](https://greenbean.media/feed/)、[本土研究社](https://liber-research.com/feed/)、[《大學線》CUHK](https://ubeat.com.cuhk.edu.hk/feed/)
 
-To add **獨立媒體** or others: confirm a working RSS URL, add a `SourceConfig` entry, redeploy.
+To add more outlets: confirm a working RSS URL, add a `SourceConfig` entry, redeploy.
 
 ## One-command deploy
 
@@ -67,7 +66,7 @@ curl -X POST "https://news.clawify.dev/api/refresh" \
 curl -s "https://news.clawify.dev/api/init"
 ```
 
-應見 `categories` 內 `本地` / `國際` 等嘅 `count`（視 RSS 而定；現時三個 feed 正常會有）。之後 cron 會每小時再拉。
+應見 `categories` 內 `本地` / `國際` 等嘅 `count`（視 RSS 而定；`sources.ts` 內各 feed 正常會有）。之後 cron 會每小時再拉。
 
 ## Auto deploy (GitHub Actions)
 
