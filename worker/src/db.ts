@@ -1,6 +1,36 @@
 import type { Article, Env } from "./types";
 import { getExcludeKeywords, getClickbaitPatterns } from "./filter";
 
+/**
+ * 「全部」：若只按 `fetched_at` 排序，同一輪 ingest 會變成同一來源（如獨媒）連續霸屏。
+ * 喺新時間序嘅池內按來源輪流出牌，每個來源內部仍係新先。
+ */
+function interleaveBySource(articles: Article[], max: number): Article[] {
+  const bySource = new Map<string, Article[]>();
+  for (const a of articles) {
+    const list = bySource.get(a.source_name) ?? [];
+    list.push(a);
+    bySource.set(a.source_name, list);
+  }
+  const keys = [...bySource.keys()].sort((a, b) =>
+    a.localeCompare(b, "zh-HK", { numeric: true }),
+  );
+  const out: Article[] = [];
+  while (out.length < max) {
+    let addedAny = false;
+    for (const k of keys) {
+      const list = bySource.get(k);
+      if (list && list.length > 0) {
+        out.push(list.shift()!);
+        addedAny = true;
+        if (out.length >= max) break;
+      }
+    }
+    if (!addedAny) break;
+  }
+  return out;
+}
+
 export async function upsertArticles(
   env: Env,
   articles: Article[],
@@ -56,13 +86,21 @@ export async function getArticles(
     params.push(source);
   }
 
+  /** 無分類、無來源 =「全部」tab → 拉大一池再交錯，避免單一來源連續出現 */
+  const mixAll = !category && !source;
+  const poolLimit = mixAll ? Math.min(Math.max(limit * 10, limit), 500) : limit;
+
   let query = "SELECT * FROM articles";
   if (conditions.length) query += " WHERE " + conditions.join(" AND ");
   query += " ORDER BY fetched_at DESC LIMIT ? OFFSET ?";
-  params.push(limit, offset);
+  params.push(poolLimit, mixAll ? 0 : offset);
 
   const result = await env.DB.prepare(query).bind(...params).all<Article>();
-  return result.results;
+  const rows = result.results;
+  if (mixAll) {
+    return interleaveBySource(rows, limit);
+  }
+  return rows;
 }
 
 export async function getArticleCounts(
