@@ -440,6 +440,41 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
 
+/**
+ * Drupal / 獨媒 RSS 有時將 `<div class="field …">` 以 entity 寫入 excerpt（`&lt;div …&gt;`），
+ * 要先解碼再剷 tag，否則 teaser 會變成「內文」顯示一堆 `&lt;div`。
+ */
+function decodeHtmlEntitiesDeep(s: string): string {
+  let out = s;
+  for (let iter = 0; iter < 12; iter++) {
+    const next = out
+      .replace(/&#(\d+);/g, (_, n) => {
+        const code = Number(n);
+        return code > 0 && code < 0x110000 ? String.fromCodePoint(code) : "";
+      })
+      .replace(/&#x([0-9a-fA-F]+);/gi, (_, h) => {
+        const code = parseInt(h, 16);
+        return code > 0 && code < 0x110000 ? String.fromCodePoint(code) : "";
+      })
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&apos;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+    if (next === out) break;
+    out = next;
+  }
+  return out;
+}
+
+function plainTextFromRssHtml(html: string): string {
+  if (!html) return "";
+  const decoded = decodeHtmlEntitiesDeep(html);
+  return stripHtml(decoded);
+}
+
 /** One-line teaser only — keeps full reporting on the publisher’s site */
 const TEASER_MAX_CHARS = 72;
 
@@ -598,7 +633,8 @@ export async function fetchRssFeeds(config: SourceConfig): Promise<Article[]> {
           if (inferred) category = inferred;
         }
         const teaserPlain =
-          stripHtml(item.excerptHtml) || stripHtml(item.contentEncoded);
+          plainTextFromRssHtml(item.excerptHtml) ||
+          plainTextFromRssHtml(item.contentEncoded);
         const desc = toTeaser(teaserPlain) || null;
 
         let imageUrl = pickItemImageUrl(
