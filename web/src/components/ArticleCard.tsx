@@ -114,7 +114,7 @@ export default function ArticleCard({
                 {formatTime(article)}
               </time>
             </div>
-            <h2 className="text-base font-semibold text-fg leading-snug group-hover:text-accent transition-colors pr-8 line-clamp-3">
+            <h2 className="text-base font-semibold text-fg leading-relaxed group-hover:text-accent transition-colors pr-8 line-clamp-3">
               {article.title}
             </h2>
             {article.description && (

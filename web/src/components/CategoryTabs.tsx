@@ -23,7 +23,7 @@ export default function CategoryTabs({
   ];
 
   return (
-    <div className="grid grid-cols-5 gap-1 px-4 pt-3 pb-1 sm:pb-3">
+    <div className="grid grid-cols-5 gap-0.5 sm:gap-1 px-4 pt-2 pb-0.5 sm:pt-3 sm:pb-1 md:pb-3">
       {items.map((cat) => {
         const isActive = cat.id === active;
         return (
@@ -31,14 +31,14 @@ export default function CategoryTabs({
             key={cat.id ?? "__all"}
             type="button"
             onClick={() => onSelect(cat.id)}
-            className={`flex flex-col items-center gap-1 py-2 rounded-xl transition-all ${
+            className={`flex flex-col items-center gap-0.5 sm:gap-1 py-1 sm:py-2 rounded-lg sm:rounded-xl transition-all min-h-[44px] sm:min-h-0 justify-center ${
               isActive
                 ? "bg-brand/10"
                 : "hover:bg-gray-50 dark:hover:bg-card-hover"
             }`}
           >
             <span
-              className={`text-2xl leading-none transition-transform ${isActive ? "scale-110" : ""}`}
+              className={`text-xl sm:text-2xl leading-none transition-transform ${isActive ? "sm:scale-110" : ""}`}
             >
               {cat.icon}
             </span>
@@ -48,14 +48,14 @@ export default function CategoryTabs({
               } ${
                 cat.label && cat.label.length > 4
                   ? "text-[9px] min-[400px]:text-[11px]"
-                  : "text-[11px]"
+                  : "text-[10px] sm:text-[11px]"
               }`}
             >
               {cat.label}
             </span>
             {cat.count > 0 && (
               <span
-                className={`text-[10px] leading-none ${
+                className={`text-[9px] sm:text-[10px] leading-none ${
                   isActive ? "text-brand/70" : "text-fg-muted/50"
                 }`}
               >

@@ -1,10 +1,20 @@
-import { useState, useCallback } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useRef,
+  lazy,
+  Suspense,
+} from "react";
 import { useArticles, useInit, useSearch } from "./hooks/useArticles";
 import { useFavourites } from "./hooks/useFavourites";
 import { useTheme } from "./hooks/useTheme";
 import CategoryTabs from "./components/CategoryTabs";
 import SourceFilter from "./components/SourceFilter";
 import ArticleList from "./components/ArticleList";
+
+const FilterDrawer = lazy(() => import("./components/FilterDrawer"));
 import SearchBar from "./components/SearchBar";
 import AboutPage from "./components/AboutPage";
 import ContactPage from "./components/ContactPage";
@@ -25,6 +35,11 @@ export default function App() {
   >("home");
   const { toggle: toggleFav, isFav, count: favCount } = useFavourites();
   const { isDark, toggle: toggleTheme } = useTheme();
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const closeFilterDrawer = useCallback(() => setFilterDrawerOpen(false), []);
+  const prefetchFilterDrawer = useCallback(() => {
+    void import("./components/FilterDrawer");
+  }, []);
 
   const { categories, sources, refreshInit } = useInit();
   const {
@@ -74,6 +89,23 @@ export default function App() {
       : feedArticles;
   const displayArticles = isSearching ? searchResults : favedFeed;
 
+  const categorySummary = useMemo(() => {
+    if (activeCategory === null) return { label: "全部", icon: "🔥" as string };
+    const c = categories.find((x) => x.id === activeCategory);
+    return { label: c?.label ?? "全部", icon: c?.icon ?? "📌" };
+  }, [activeCategory, categories]);
+  const sourceSummaryLabel =
+    activeSource === null ? "全部來源" : activeSource;
+
+  const skipFilterScrollRef = useRef(true);
+  useEffect(() => {
+    if (skipFilterScrollRef.current) {
+      skipFilterScrollRef.current = false;
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeCategory, activeSource]);
+
   if (page === "about")
     return (
       <AboutPage
@@ -94,7 +126,7 @@ export default function App() {
   return (
     <div className="min-h-screen max-w-4xl mx-auto pb-8">
       <header className="sticky top-0 z-10 bg-surface/80 backdrop-blur-lg border-b border-border">
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-2 sm:py-3">
           <button
             type="button"
             onClick={() => {
@@ -104,22 +136,22 @@ export default function App() {
               setIsSearching(false);
               setShowFavs(false);
             }}
-            className="text-left flex items-center gap-3 min-w-0"
+            className="text-left flex items-center gap-2 sm:gap-3 min-w-0"
           >
             <img
               src="/logo.png"
               alt=""
               width={36}
               height={36}
-              className="w-9 h-9 rounded-xl shrink-0 object-contain"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl shrink-0 object-contain"
               decoding="async"
               aria-hidden
             />
             <div className="min-w-0">
-              <h1 className="text-xl font-bold text-fg tracking-tight">
+              <h1 className="text-lg sm:text-xl font-bold text-fg tracking-tight">
                 港聞講乜
               </h1>
-              <p className="text-xs text-fg-muted">
+              <p className="text-xs text-fg-muted hidden sm:block">
                 香港本地媒體新聞一覽 · 點擊前往原文
               </p>
             </div>
@@ -129,8 +161,8 @@ export default function App() {
               type="button"
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-elevated dark:hover:bg-card-hover transition-colors"
-              aria-label={isDark ? "淺色模式" : "深色模式"}
-              title={isDark ? "淺色模式" : "深色模式"}
+              aria-label={isDark ? "切換至淺色主題" : "切換至深色主題"}
+              title={isDark ? "切換淺色／深色主題（而家：深色）" : "切換淺色／深色主題（而家：淺色）"}
             >
               {isDark ? (
                 <svg
@@ -166,8 +198,8 @@ export default function App() {
               type="button"
               onClick={() => setShowFavs((f) => !f)}
               className={`relative p-2 rounded-full transition-colors ${showFavs ? "bg-red-500/15 dark:bg-red-500/20" : "hover:bg-elevated dark:hover:bg-card-hover"}`}
-              aria-label="收藏"
-              title="只睇收藏"
+              aria-label={showFavs ? "顯示全部文章" : "只顯示已收藏文章"}
+              title="只顯示已收藏文章（再撳一次返回全部）"
             >
               <svg
                 className={`w-5 h-5 ${showFavs ? "text-red-500 fill-red-500" : "text-fg-muted"}`}
@@ -225,19 +257,100 @@ export default function App() {
 
         {!isSearching && (
           <>
-            <CategoryTabs
-              categories={categories}
-              active={activeCategory}
-              onSelect={(id) => {
-                setActiveCategory(id);
-                setActiveSource(null);
-              }}
-            />
-            <SourceFilter
-              sources={sources}
-              active={activeSource}
-              onSelect={setActiveSource}
-            />
+            <div className="hidden md:block">
+              <CategoryTabs
+                categories={categories}
+                active={activeCategory}
+                onSelect={(id) => {
+                  setActiveCategory(id);
+                  setActiveSource(null);
+                }}
+              />
+              <SourceFilter
+                sources={sources}
+                active={activeSource}
+                onSelect={setActiveSource}
+              />
+            </div>
+
+            <div className="md:hidden px-4 pb-2">
+              <button
+                type="button"
+                onPointerDown={prefetchFilterDrawer}
+                onClick={() => setFilterDrawerOpen(true)}
+                className="w-full flex items-center justify-between gap-2 rounded-xl border border-border bg-elevated/80 dark:bg-card/50 px-3 py-2.5 text-left min-h-[44px] active:bg-elevated dark:active:bg-card-hover transition-colors"
+                aria-expanded={filterDrawerOpen}
+                aria-haspopup="dialog"
+              >
+                <span className="min-w-0 flex items-center gap-2 text-sm">
+                  <span
+                    className="text-lg leading-none shrink-0"
+                    aria-hidden
+                  >
+                    {categorySummary.icon}
+                  </span>
+                  <span className="truncate">
+                    <span className="text-fg-muted font-normal">分類</span>{" "}
+                    <span className="font-medium text-fg">
+                      {categorySummary.label}
+                    </span>
+                    <span className="text-fg-muted mx-1">·</span>
+                    <span className="text-fg-muted font-normal">來源</span>{" "}
+                    <span className="font-medium text-fg">
+                      {sourceSummaryLabel}
+                    </span>
+                  </span>
+                </span>
+                <svg
+                  className="w-5 h-5 text-fg-muted shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {filterDrawerOpen && (
+              <Suspense
+                fallback={
+                  <button
+                    type="button"
+                    className="fixed inset-0 z-[100] md:hidden bg-black/70 dark:bg-black/80 cursor-default"
+                    aria-busy="true"
+                    aria-label="載入篩選中，點擊關閉"
+                    onClick={closeFilterDrawer}
+                  />
+                }
+              >
+                <FilterDrawer
+                  title="分類與來源"
+                  onClose={closeFilterDrawer}
+                >
+                  <CategoryTabs
+                    categories={categories}
+                    active={activeCategory}
+                    onSelect={(id) => {
+                      setActiveCategory(id);
+                      setActiveSource(null);
+                    }}
+                  />
+                  <SourceFilter
+                    variant="drawer"
+                    sources={sources}
+                    active={activeSource}
+                    onSelect={setActiveSource}
+                  />
+                </FilterDrawer>
+              </Suspense>
+            )}
           </>
         )}
       </header>
@@ -250,13 +363,21 @@ export default function App() {
         )}
         <ArticleList
           articles={displayArticles}
-          loading={loading && !isSearching}
+          loading={
+            (isSearching && searching) ||
+            (!isSearching && loading)
+          }
           error={isSearching ? null : error}
           emptyMessage={
-            showFavs && !isSearching ? "暫無收藏" : undefined
+            showFavs && !isSearching
+              ? "暫無收藏"
+              : isSearching && !searching && searchResults.length === 0
+                ? "搵唔到結果，試下其他關鍵字"
+                : undefined
           }
           isFav={isFav}
           onToggleFav={toggleFav}
+          onRetry={isSearching ? undefined : refresh}
         />
       </main>
 

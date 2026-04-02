@@ -14,7 +14,7 @@ export default function SearchBar({
   }, [q, onSearch]);
 
   return (
-    <div className="px-4 pb-3">
+    <div className="px-4 pb-2 sm:pb-3">
       <div className="flex gap-2">
         <input
           type="search"
@@ -25,13 +25,14 @@ export default function SearchBar({
           }}
           onKeyDown={(e) => e.key === "Enter" && submit()}
           placeholder="搜尋標題或摘要…"
-          className="flex-1 rounded-lg border border-border px-3 py-2 text-sm bg-surface text-fg placeholder:text-fg-muted shadow-inner shadow-black/[0.04] dark:shadow-none dark:bg-card"
+          aria-busy={searching}
+          className="flex-1 rounded-lg border border-border px-3 py-1.5 sm:py-2 text-sm bg-surface text-fg placeholder:text-fg-muted shadow-inner shadow-black/[0.04] dark:shadow-none dark:bg-card"
         />
         <button
           type="button"
           onClick={submit}
           disabled={searching}
-          className="px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium shadow-sm shadow-black/15 hover:opacity-90 active:opacity-80 disabled:opacity-50 transition-opacity"
+          className="shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-brand text-white text-sm font-medium shadow-sm shadow-black/15 hover:opacity-90 active:opacity-80 disabled:opacity-50 transition-opacity"
         >
           {searching ? "…" : "搜尋"}
         </button>

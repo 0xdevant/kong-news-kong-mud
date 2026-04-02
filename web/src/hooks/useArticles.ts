@@ -122,6 +122,7 @@ export function useSearch() {
       return;
     }
     setSearching(true);
+    setResults([]);
     try {
       const url = `${API_BASE}/api/search?q=${encodeURIComponent(q)}`;
       const data = await cachedFetch<{
