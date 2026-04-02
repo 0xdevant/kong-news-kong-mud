@@ -528,6 +528,44 @@ function stableId(prefix: string, guid: string, link: string): string {
   return prefix + Math.abs(hash).toString(36);
 }
 
+/** 部分站（如 thecollectivehk.com）對「Chrome」UA 回 403 HTML；輪換 UA 直至拿到真 RSS。 */
+const RSS_FETCH_USER_AGENTS = [
+  "Mozilla/5.0 (compatible; RSS reader; +https://news.clawify.dev)",
+  "curl/8.7.1",
+  "Feedly/1.0 (+https://feedly.com)",
+] as const;
+
+async function fetchFeedXml(feedUrl: string, sourceName: string): Promise<string | null> {
+  let origin: string;
+  try {
+    origin = new URL(feedUrl).origin;
+  } catch {
+    origin = "";
+  }
+  for (const ua of RSS_FETCH_USER_AGENTS) {
+    const resp = await fetch(feedUrl, {
+      headers: {
+        "User-Agent": ua,
+        Accept: "application/rss+xml, application/xml, text/xml, */*",
+        "Accept-Language": "zh-HK,zh-Hant;q=0.9,en;q=0.7",
+        ...(origin ? { Referer: `${origin}/` } : {}),
+      },
+    });
+    if (!resp.ok) continue;
+    const xml = await resp.text();
+    if (/<item[\s>]/i.test(xml) || /<rss[\s>]/i.test(xml)) return xml;
+  }
+  console.error(
+    JSON.stringify({
+      event: "rss_feed_fetch_no_xml",
+      source: sourceName,
+      url: feedUrl,
+      triedUas: RSS_FETCH_USER_AGENTS.length,
+    }),
+  );
+  return null;
+}
+
 export async function fetchRssFeeds(config: SourceConfig): Promise<Article[]> {
   const articles: Article[] = [];
   const seen = new Set<string>();
@@ -539,31 +577,9 @@ export async function fetchRssFeeds(config: SourceConfig): Promise<Article[]> {
 
   for (const feedUrl of config.urls) {
     try {
-      const resp = await fetch(feedUrl, {
-        headers: {
-          /**
-           * 勿用「完整 Chrome」UA：部分站（如 thecollectivehk.com / Cloudflare WAF）會對佢回 403，
-           * 令 RSS 變 HTML 錯誤頁、`parseRssItems` 得 0 條。用可識別嘅 RSS poller 即可通過現有各 feed。
-           */
-          "User-Agent":
-            "Mozilla/5.0 (compatible; RSS reader; +https://news.clawify.dev)",
-          Accept: "application/rss+xml, application/xml, text/xml, */*",
-          "Accept-Language": "zh-HK,zh-Hant;q=0.9,en;q=0.7",
-        },
-      });
-      if (!resp.ok) {
-        console.error(
-          JSON.stringify({
-            event: "rss_feed_http_error",
-            source: config.name,
-            url: feedUrl,
-            status: resp.status,
-          }),
-        );
-        continue;
-      }
+      const xml = await fetchFeedXml(feedUrl, config.name);
+      if (!xml) continue;
 
-      const xml = await resp.text();
       const items = parseRssItems(xml);
 
       for (const item of items) {
