@@ -541,9 +541,12 @@ export async function fetchRssFeeds(config: SourceConfig): Promise<Article[]> {
     try {
       const resp = await fetch(feedUrl, {
         headers: {
-          /** Browser-like UA — Drupal/Sucuri 常擋 `RSS reader` bot */
+          /**
+           * 勿用「完整 Chrome」UA：部分站（如 thecollectivehk.com / Cloudflare WAF）會對佢回 403，
+           * 令 RSS 變 HTML 錯誤頁、`parseRssItems` 得 0 條。用可識別嘅 RSS poller 即可通過現有各 feed。
+           */
           "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (compatible; RSS reader; +https://news.clawify.dev)",
           Accept: "application/rss+xml, application/xml, text/xml, */*",
           "Accept-Language": "zh-HK,zh-Hant;q=0.9,en;q=0.7",
         },
