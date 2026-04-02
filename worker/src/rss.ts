@@ -475,6 +475,66 @@ function plainTextFromRssHtml(html: string): string {
   return stripHtml(decoded);
 }
 
+/**
+ * 獨媒 RSS `<description>` 內 Drupal 順序係：taxonomy「內容」→ 圖 →「自由標籤」→ `field-name-body` 正文。
+ * 只取 body 內 `field-item`，避免 teaser 開頭變成「內容: 政經 自由標籤: 獨媒報導 …」。
+ */
+function extractInmediaBodyInnerHtml(html: string): string | null {
+  if (!html.includes("field-name-body")) return null;
+  const decoded = decodeHtmlEntitiesDeep(html);
+  const m = decoded.match(
+    /<div[^>]*class="[^"]*field-name-body[^"]*"[^>]*>[\s\S]*?<div[^>]*class="[^"]*field-items[^"]*"[^>]*>[\s\S]*?<div[^>]*class="[^"]*field-item[^"]*"[^>]*>/i,
+  );
+  if (!m || m.index === undefined) return null;
+  const start = m.index + m[0].length;
+  let depth = 1;
+  let pos = start;
+  const s = decoded;
+  while (pos < s.length && depth > 0) {
+    const sub = s.slice(pos);
+    const open = sub.search(/<div\b/i);
+    const close = sub.search(/<\/div>/i);
+    if (close === -1) return null;
+    if (open !== -1 && open < close) {
+      depth++;
+      pos += open + 4;
+    } else {
+      depth--;
+      if (depth === 0) return s.slice(start, pos + close);
+      pos += close + 6;
+    }
+  }
+  return null;
+}
+
+/** 解唔到 body 欄位時，剷走已變成純文字嘅版面標籤行 */
+function stripInmediaMetaFromPlainText(text: string): string {
+  let out = text.replace(/\s+/g, " ").trim();
+  const brk = out.search(/【/);
+  if (brk > 0 && brk < 200) {
+    const head = out.slice(0, brk);
+    if (/內容|自由標籤/.test(head)) {
+      return out.slice(brk).trim();
+    }
+  }
+  out = out.replace(/^內容\s*[:：]\s*\S+\s*/u, "");
+  out = out.replace(/^自由標籤\s*[:：]\s*[\s\S]*?(?=【)/u, "");
+  return out.trim();
+}
+
+function inmediaTeaserPlain(excerptHtml: string, contentEncoded: string): string {
+  const body =
+    extractInmediaBodyInnerHtml(excerptHtml) ||
+    extractInmediaBodyInnerHtml(contentEncoded);
+  if (body) {
+    return plainTextFromRssHtml(body);
+  }
+  const fallback =
+    plainTextFromRssHtml(excerptHtml) ||
+    plainTextFromRssHtml(contentEncoded);
+  return stripInmediaMetaFromPlainText(fallback);
+}
+
 /** One-line teaser only — keeps full reporting on the publisher’s site */
 const TEASER_MAX_CHARS = 72;
 
@@ -632,9 +692,10 @@ export async function fetchRssFeeds(config: SourceConfig): Promise<Article[]> {
           const inferred = inferInmediaCategoryFromUrl(item.link);
           if (inferred) category = inferred;
         }
-        const teaserPlain =
-          plainTextFromRssHtml(item.excerptHtml) ||
-          plainTextFromRssHtml(item.contentEncoded);
+        const teaserPlain = item.link.includes("inmediahk.net")
+          ? inmediaTeaserPlain(item.excerptHtml, item.contentEncoded)
+          : plainTextFromRssHtml(item.excerptHtml) ||
+            plainTextFromRssHtml(item.contentEncoded);
         const desc = toTeaser(teaserPlain) || null;
 
         let imageUrl = pickItemImageUrl(
