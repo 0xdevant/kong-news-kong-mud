@@ -1,0 +1,8 @@
+---
+description: Production deploy must include pushing to GitHub
+alwaysApply: true
+---
+
+# Production deploy and GitHub
+
+When the user asks to **deploy to production** (or to ship changes to prod), treat the workflow as **incomplete** unless **GitHub is updated**: commit as needed, **push to the remote** (e.g. `origin` / default branch), then run the project deploy (e.g. root `npm run deploy` for worker + Pages). Do not deploy to prod and leave only local commits—**prod deploy includes pushing to GH** so the repo matches what was shipped.

@@ -623,7 +623,9 @@ function stableId(prefix: string, guid: string, link: string): string {
   return prefix + Math.abs(hash).toString(36);
 }
 
-/** 部分站（如 thecollectivehk.com）對「Chrome」UA 回 403 HTML；輪換 UA 直至拿到真 RSS。 */
+/**
+ * 部分站對「Chrome」UA 回 403 HTML；輪換 UA 直至拿到真 RSS。
+ */
 const RSS_FETCH_USER_AGENTS = [
   "Mozilla/5.0 (compatible; RSS reader; +https://news.clawify.dev)",
   "curl/8.7.1",
@@ -637,18 +639,26 @@ async function fetchFeedXml(feedUrl: string, sourceName: string): Promise<string
   } catch {
     origin = "";
   }
+  let lastStatus = 0;
   for (const ua of RSS_FETCH_USER_AGENTS) {
-    const resp = await fetch(feedUrl, {
-      headers: {
-        "User-Agent": ua,
-        Accept: "application/rss+xml, application/xml, text/xml, */*",
-        "Accept-Language": "zh-HK,zh-Hant;q=0.9,en;q=0.7",
-        ...(origin ? { Referer: `${origin}/` } : {}),
-      },
-    });
-    if (!resp.ok) continue;
-    const xml = await resp.text();
-    if (/<item[\s>]/i.test(xml) || /<rss[\s>]/i.test(xml)) return xml;
+    try {
+      const resp = await fetch(feedUrl, {
+        redirect: "follow",
+        headers: {
+          "User-Agent": ua,
+          Accept: "application/rss+xml, application/xml, text/xml, */*",
+          "Accept-Language": "zh-HK,zh-Hant;q=0.9,en;q=0.7",
+          ...(origin ? { Referer: `${origin}/` } : {}),
+        },
+        signal: AbortSignal.timeout(25_000),
+      });
+      lastStatus = resp.status;
+      if (!resp.ok) continue;
+      const xml = await resp.text();
+      if (/<item[\s>]/i.test(xml) || /<rss[\s>]/i.test(xml)) return xml;
+    } catch {
+      /* 下一個 UA 或下一個 feed URL */
+    }
   }
   console.error(
     JSON.stringify({
@@ -656,6 +666,7 @@ async function fetchFeedXml(feedUrl: string, sourceName: string): Promise<string
       source: sourceName,
       url: feedUrl,
       triedUas: RSS_FETCH_USER_AGENTS.length,
+      lastHttpStatus: lastStatus || undefined,
     }),
   );
   return null;
@@ -676,6 +687,7 @@ export async function fetchRssFeeds(config: SourceConfig): Promise<Article[]> {
       if (!xml) continue;
 
       const items = parseRssItems(xml);
+      if (items.length === 0) continue;
 
       for (const item of items) {
         if (!item.link) continue;

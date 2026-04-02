@@ -7,6 +7,11 @@ export interface Env {
   /** JSON array or comma-separated exclude keywords (title/description/labels) */
   FILTER_EXCLUDE_KEYWORDS?: string;
   FILTER_CLICKBAIT_PATTERNS?: string;
+  /**
+   * Set to "true" so exclude/clickbait keywords only match **title** (not body teaser).
+   * Reduces false positives for political HK news in RSS descriptions; aligns daily purge.
+   */
+  FILTER_APPLY_TO_TITLE_ONLY?: string;
   /** Optional: Resend API for contact form notifications */
   RESEND_API_KEY?: string;
   /** Recipient for contact notifications (e.g. you@domain.com) */

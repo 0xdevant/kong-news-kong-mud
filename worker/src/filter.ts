@@ -45,17 +45,28 @@ export function getClickbaitPatterns(env: Env): string[] {
   return [...new Set(parseKeywordList(env.FILTER_CLICKBAIT_PATTERNS))];
 }
 
+/** When true, keyword filters only inspect `title` (recommended for HK news RSS). */
+export function appliesKeywordFilterToTitleOnly(env: Env): boolean {
+  return env.FILTER_APPLY_TO_TITLE_ONLY === "true";
+}
+
+function matchTextForFilter(a: Article, titleOnly: boolean): string {
+  if (titleOnly) return a.title.toLowerCase();
+  return (
+    a.title +
+    " " +
+    (a.description || "") +
+    " " +
+    (a.labels || "")
+  ).toLowerCase();
+}
+
 export function filterArticles(articles: Article[], env: Env): Article[] {
   const exclude = getExcludeKeywords(env);
   const clickbait = getClickbaitPatterns(env);
+  const titleOnly = appliesKeywordFilterToTitleOnly(env);
   return articles.filter((a) => {
-    const text = (
-      a.title +
-      " " +
-      (a.description || "") +
-      " " +
-      (a.labels || "")
-    ).toLowerCase();
+    const text = matchTextForFilter(a, titleOnly);
     if (exclude.some((kw) => text.includes(kw.toLowerCase()))) return false;
     if (clickbait.some((kw) => text.includes(kw.toLowerCase()))) return false;
     return true;

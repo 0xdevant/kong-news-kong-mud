@@ -5,6 +5,8 @@
 # PAGES_ORIGIN=https://news.clawify.dev
 # FILTER_EXCLUDE_KEYWORDS=keyword1, keyword2
 # FILTER_CLICKBAIT_PATTERNS=
+# 只對標題套用排除／引誘字（建議 true，避免正文誤殺港聞；wrangler.toml 已預設）
+# FILTER_APPLY_TO_TITLE_ONLY=true
 # Optional contact form → Resend (messages always stored in D1)
 # RESEND_API_KEY=
 # CONTACT_EMAIL_TO=you@example.com

@@ -1,0 +1,11 @@
+---
+description: User-visible copy uses Traditional Chinese (HK), not Simplified
+globs: web/**/*.tsx, web/**/*.html
+alwaysApply: false
+---
+
+# 繁體中文（香港）
+
+- All **user-facing** Chinese in `web/` must be **繁體**，唔好用**簡體字**。
+- Common mistakes: `随`→`隨`、`国`→`國`、`个`→`個`、`这`→`這`、`为`→`為`、`发`→`發`、`见`→`見`、`长`→`長`、`东`→`東`、`电`→`電`、`学`→`學`、`过`→`過`、`还`→`還`、`实`→`實`、`现`→`現`、`应`→`應`、`头`→`頭`、`样`→`樣`、`边`→`邊`、`动`→`動`、`产`→`產`、`众`→`眾`、`从`→`從`、`价`→`價`、`书`→`書`、`门`→`門`、`开`→`開`、`关`→`關`、`时`→`時`（若係簡體語境）。
+- **RSS** 等技術詞、媒體原名、或 RSS `category` 與來源一致嘅字可以照抄來源。

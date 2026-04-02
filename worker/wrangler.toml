@@ -19,3 +19,5 @@ database_id = "5308a69e-a5b0-4253-8d57-136af27cedf3"
 [vars]
 WORKER_ENV = "production"
 PAGES_ORIGIN = "https://news.clawify.dev"
+# 排除關鍵字只對標題生效，避免正文摘要誤殺港聞；與 purge 一致
+FILTER_APPLY_TO_TITLE_ONLY = "true"

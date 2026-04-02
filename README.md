@@ -29,7 +29,7 @@ Hourly cron also runs RSS ingestion; D1 was migrated on first deploy.
 
 Configured in [`worker/src/sources.ts`](worker/src/sources.ts):
 
-- [獨立媒體](https://www.inmediahk.net/rss.xml)、[香城公民媒體](https://hkcitizenmedia.com/feed/)、[綠豆](https://greenbean.media/feed/)、[本土研究社](https://liber-research.com/feed/)、[《大學線》CUHK](https://ubeat.com.cuhk.edu.hk/feed/)、[集誌社](https://thecollectivehk.com/feed/)
+- [獨立媒體](https://www.inmediahk.net/rss.xml)、[香城公民媒體](https://hkcitizenmedia.com/feed/)、[綠豆](https://greenbean.media/feed/)、[本土研究社](https://liber-research.com/feed/)、[《大學線》CUHK](https://ubeat.com.cuhk.edu.hk/feed/)
 
 To add more outlets: confirm a working RSS URL, add a `SourceConfig` entry, redeploy.
 

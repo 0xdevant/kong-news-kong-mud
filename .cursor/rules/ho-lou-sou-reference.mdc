@@ -1,0 +1,13 @@
+---
+description: 好路數 UI／互動對照 — 必須參考本機 ho-lou-sou 姊妹專案
+alwaysApply: true
+---
+
+# 好路數（Ho Lou Sou）對照
+
+當討論 **好路數**、要「跟返好路數個樣」、或比較分類列／emoji／chip 等 UI 時：
+
+- **Canonical 參考 repo（本機）：** `/Users/ant/Desktop/ho-lou-sou`（與本專案同目錄層級嘅 `ho-lou-sou`）
+- 慣例對照檔：`web/src/components/CategoryTabs.tsx`、Worker `/api/init` 入面 `categories` 嘅 `icon` 欄、header logo 排版等。
+
+唔好用網上隨意搜「好路數」推測；以呢個 repo 嘅實作為準。

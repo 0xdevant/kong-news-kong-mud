@@ -120,30 +120,6 @@ const UBEAT_MAP: Record<string, NewsCategory> = {
   圖片故事: "其他",
 };
 
-/** 集誌社 thecollectivehk.com — WordPress RSS `<category>` → buckets */
-const COLLECTIVE_MAP: Record<string, NewsCategory> = {
-  深度: "時事",
-  聚焦一周: "時事",
-  新聞自由: "時事",
-  立法會選舉: "時事",
-  圖解新聞: "時事",
-  互動圖解: "時事",
-  yahoo新聞: "時事",
-  宏福苑: "本地",
-  宏福苑火災: "本地",
-  獨立委員會: "本地",
-  關愛隊: "本地",
-  關愛隊工作報告: "本地",
-  支聯會案: "時事",
-  鄒幸彤: "時事",
-  關振邦: "其他",
-  白票: "時事",
-  廢票: "時事",
-  台灣: "國際",
-  圖輯: "其他",
-  影像: "其他",
-};
-
 export const HK_NEWS_FEEDS: SourceConfig[] = [
   /** 放前：合併後 `enrichArticlesWithOgImages` 配額唔會永遠輪唔到獨媒 */
   {
@@ -176,13 +152,6 @@ export const HK_NEWS_FEEDS: SourceConfig[] = [
     name: "大學線",
     urls: ["https://ubeat.com.cuhk.edu.hk/feed/"],
     categoryMap: UBEAT_MAP,
-    defaultCategory: "時事",
-    wordpressFeaturedFallback: true,
-  },
-  {
-    name: "集誌社",
-    urls: ["https://thecollectivehk.com/feed/"],
-    categoryMap: COLLECTIVE_MAP,
     defaultCategory: "時事",
     wordpressFeaturedFallback: true,
   },

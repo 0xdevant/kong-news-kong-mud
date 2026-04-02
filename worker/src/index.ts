@@ -271,6 +271,11 @@ async function runRssIngestion(env: Env) {
   const backfillWp = await backfillWordPressFeaturedForStoredArticles(env);
   const backfillInmedia = await backfillInmediaOgImages(env);
   const cleaned = await cleanOldArticles(env, 14);
+  const perSource = HK_NEWS_FEEDS.map((cfg, i) => {
+    const raw = batches[i].length;
+    const after = filterArticles(batches[i], env).length;
+    return { name: cfg.name, raw, afterFilter: after };
+  });
   return {
     inserted,
     fetched: combined.length,
@@ -279,6 +284,7 @@ async function runRssIngestion(env: Env) {
     feeds: HK_NEWS_FEEDS.length,
     backfillWp,
     backfillInmedia,
+    perSource,
   };
 }
 

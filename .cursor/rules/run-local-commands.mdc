@@ -1,0 +1,8 @@
+---
+description: Run local commands (dev, build, scripts) instead of only suggesting them
+alwaysApply: true
+---
+
+# Local execution preference
+
+When something only needs to run **on this machine** (e.g. `npm run dev`, `npm run build`, `npm run refresh:local`, typecheck, tests) and does **not** require the user’s production deploy credentials or manual cloud dashboard steps, **execute those commands in the terminal** as part of the task. Do not stop at “you can run…” unless the user explicitly wants instructions only.

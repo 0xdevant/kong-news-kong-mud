@@ -1,5 +1,9 @@
 import type { Article, Env } from "./types";
-import { getExcludeKeywords, getClickbaitPatterns } from "./filter";
+import {
+  getExcludeKeywords,
+  getClickbaitPatterns,
+  appliesKeywordFilterToTitleOnly,
+} from "./filter";
 
 /**
  * 「全部」：若只按 `fetched_at` 排序，同一輪 ingest 會變成同一來源（如獨媒）連續霸屏。
@@ -138,14 +142,19 @@ export async function purgeExcludedArticles(env: Env): Promise<{
     ...new Set([...getExcludeKeywords(env), ...getClickbaitPatterns(env)]),
   ];
   if (keywords.length === 0) return { deleted: 0, keywordCount: 0 };
+  const titleOnly = appliesKeywordFilterToTitleOnly(env);
   let total = 0;
   for (const kw of keywords) {
     const like = `%${kw}%`;
-    const r = await env.DB.prepare(
-      `DELETE FROM articles WHERE title LIKE ? OR IFNULL(description,'') LIKE ? OR IFNULL(labels,'') LIKE ?`,
-    )
-      .bind(like, like, like)
-      .run();
+    const r = titleOnly
+      ? await env.DB.prepare(`DELETE FROM articles WHERE title LIKE ?`)
+          .bind(like)
+          .run()
+      : await env.DB.prepare(
+          `DELETE FROM articles WHERE title LIKE ? OR IFNULL(description,'') LIKE ? OR IFNULL(labels,'') LIKE ?`,
+        )
+          .bind(like, like, like)
+          .run();
     total += r.meta.changes ?? 0;
   }
   return { deleted: total, keywordCount: keywords.length };
