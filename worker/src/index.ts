@@ -4,6 +4,8 @@ import type { Env, Article } from "./types";
 import {
   getArticles,
   getArticleCounts,
+  countArticlesPublishedToday,
+  backfillPublishedAtTs,
   upsertArticles,
   cleanOldArticles,
   purgeExcludedArticles,
@@ -101,14 +103,16 @@ app.get("/api/articles", async (c) => {
 });
 
 app.get("/api/init", async (c) => {
-  const [counts, sourcesResult] = await Promise.all([
+  const [counts, todayCount, sourcesResult] = await Promise.all([
     getArticleCounts(c.env),
+    countArticlesPublishedToday(c.env),
     c.env.DB.prepare(
       "SELECT source_name, COUNT(*) as count FROM articles GROUP BY source_name ORDER BY count DESC",
     ).all<{ source_name: string; count: number }>(),
   ]);
 
   const categories = [
+    { id: "今日", label: "今日", icon: "📅", count: todayCount },
     { id: "本地", label: "本地", icon: "📍", count: counts["本地"] || 0 },
     { id: "國際", label: "國際", icon: "🌍", count: counts["國際"] || 0 },
     { id: "時事", label: "時事", icon: "🇭🇰", count: counts["時事"] || 0 },
@@ -268,6 +272,7 @@ async function runRssIngestion(env: Env) {
   const filtered = filterArticles(combined, env);
   await enrichArticlesWithOgImages(filtered, env);
   const inserted = await upsertArticles(env, filtered);
+  const backfillPubTs = await backfillPublishedAtTs(env);
   const backfillWp = await backfillWordPressFeaturedForStoredArticles(env);
   const backfillInmedia = await backfillInmediaOgImages(env);
   const cleaned = await cleanOldArticles(env, 14);
@@ -282,6 +287,7 @@ async function runRssIngestion(env: Env) {
     afterFilter: filtered.length,
     cleaned,
     feeds: HK_NEWS_FEEDS.length,
+    backfillPubTs,
     backfillWp,
     backfillInmedia,
     perSource,
@@ -309,7 +315,7 @@ export default {
     ctx.waitUntil(
       runRssIngestion(env).then((r) =>
         console.log(
-          `Hourly RSS: fetched ${r.fetched}, inserted ${r.inserted}, backfillWp ${r.backfillWp}, backfillInmedia ${r.backfillInmedia}`,
+          `Hourly RSS: fetched ${r.fetched}, inserted ${r.inserted}, backfillPubTs ${r.backfillPubTs}, backfillWp ${r.backfillWp}, backfillInmedia ${r.backfillInmedia}`,
         ),
       ),
     );

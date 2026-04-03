@@ -12,6 +12,8 @@ export interface Article {
   image_url: string | null;
   fetched_at: number;
   published_at: string | null;
+  /** Unix seconds from RSS pubDate (API); optional */
+  published_at_ts?: number | null;
 }
 
 export interface CategoryInfo {

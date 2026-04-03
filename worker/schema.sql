@@ -10,13 +10,15 @@ CREATE TABLE articles (
   labels TEXT,
   image_url TEXT,
   fetched_at INTEGER NOT NULL,
-  published_at TEXT
+  published_at TEXT,
+  published_at_ts INTEGER
 );
 
 CREATE INDEX idx_articles_category ON articles(category);
 CREATE INDEX idx_articles_fetched ON articles(fetched_at DESC);
 CREATE INDEX idx_articles_source ON articles(source_name);
 CREATE INDEX idx_articles_cat_fetched ON articles(category, fetched_at DESC);
+CREATE INDEX idx_articles_pub_ts ON articles(published_at_ts DESC);
 
 CREATE TABLE IF NOT EXISTS contact_messages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

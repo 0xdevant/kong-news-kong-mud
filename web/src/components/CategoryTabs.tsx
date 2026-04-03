@@ -1,6 +1,6 @@
 import type { CategoryInfo } from "../hooks/useArticles";
 
-/** 與 ho-lou-sou (`~/Desktop/ho-lou-sou`) `CategoryTabs` + `/api/init` 的 `icon` 欄位一致：emoji + 五欄 grid + `bg-brand/10` 選中 */
+/** 與 ho-lou-sou (`~/Desktop/ho-lou-sou`) `CategoryTabs` + `/api/init` 的 `icon` 欄位一致：emoji + grid + `bg-brand/10` 選中 */
 const ALL_ICON = "🔥";
 
 export default function CategoryTabs({
@@ -23,7 +23,7 @@ export default function CategoryTabs({
   ];
 
   return (
-    <div className="grid grid-cols-5 gap-0.5 sm:gap-1 px-4 pt-2 pb-0.5 sm:pt-3 sm:pb-1 md:pb-3">
+    <div className="grid grid-cols-3 sm:grid-cols-6 gap-0.5 sm:gap-1 px-4 pt-2 pb-0.5 sm:pt-3 sm:pb-1 md:pb-3">
       {items.map((cat) => {
         const isActive = cat.id === active;
         return (

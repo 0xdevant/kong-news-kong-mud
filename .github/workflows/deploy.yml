@@ -29,6 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Apply D1 migrations (remote)
+        run: cd worker && npx wrangler d1 migrations apply hk-news-rss-db --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: "21c1a304a3cc9e14c82bc784f6abbfa9"
+
       - name: Deploy Worker and Pages
         run: npm run deploy
         env:

@@ -15,6 +15,7 @@ binding = "DB"
 database_name = "hk-news-rss-db"
 # Legacy D1 display name (binding uses database_id below)
 database_id = "5308a69e-a5b0-4253-8d57-136af27cedf3"
+migrations_dir = "migrations"
 
 [vars]
 WORKER_ENV = "production"

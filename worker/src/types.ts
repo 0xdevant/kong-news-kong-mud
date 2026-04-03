@@ -36,6 +36,8 @@ export interface Article {
   image_url: string | null;
   fetched_at: number;
   published_at: string | null;
+  /** Unix seconds (UTC); from RSS `pubDate` for「今日」and ordering. Optional on older rows until backfill/ re-ingest. */
+  published_at_ts?: number | null;
 }
 
 export type NewsCategory = "本地" | "國際" | "時事" | "其他";
